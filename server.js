@@ -7,7 +7,7 @@ dotenv.config();
 
 (async () => {
 
-    // await new ContributionBot(1, 2023);
+    await new ContributionBot(69, 2024);
 
     const GitHubUsername    =   process.env.GITHUB_USERNAME;
     const GithubAccessToken =   process.env.GITHUB_ACCESS_TOKEN;

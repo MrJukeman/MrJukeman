@@ -23,10 +23,17 @@ export class ContributionBot {
             return;
         }
 
-        const month = this.month ?? random.int(0, 11);
-        const day   = this.day ?? random.int(1, 28);
-        const DATE  = moment().year(this.year).month(month).date(day).format();
+        const today = moment();
+        let randomDate;
 
+        do
+        {
+            const month = random.int(0, 11);
+            const day   = random.int(1, moment({ month }).daysInMonth());
+            randomDate  = moment().month(month).date(day);
+        } while (randomDate.isAfter(today));
+
+        const DATE = randomDate.year(this.year).format();
         try
         {
             await new Promise((resolve, reject) => {
