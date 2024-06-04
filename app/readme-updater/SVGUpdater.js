@@ -21,7 +21,7 @@ class SVGUpdater {
             let cssContent      = fs.readFileSync(`public/assets/css/readme/${theme}.css`, 'utf8');
             let age             = this.getAge("1998-06-13");
             let content         = `
-                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">${stats.totalRepos}</tspan> {<tspan class="keyColor">Contributed</tspan>: <tspan class="valueColor">${stats.totalContributions}</tspan>}  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">${stats.totalCommits}  </tspan>
+                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">${stats.totalRepos}</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">${stats.totalContributions}</tspan>}  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">${stats.totalCommits}  </tspan>
                 <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">${stats.totalStars}</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">${stats.followers}  </tspan>
                 <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">${stats.totalDeletions + stats.totalAdditions}</tspan> (<tspan class="addColor">${stats.totalAdditions}++</tspan>, <tspan class="delColor">${stats.totalDeletions}--</tspan>)
             `;
