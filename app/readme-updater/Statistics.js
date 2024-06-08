@@ -1,5 +1,6 @@
 import { getGithubContributions } from 'github-contributions-counter';
 import GitHubAPI from './GitHubAPI.js';
+import {formatNumber} from "../../helpers/functions.js";
 
 class Statistics {
     constructor(username, accessToken) {
@@ -77,7 +78,14 @@ class Statistics {
             }
 
             return {
-                totalRepos: public_repos + owned_private_repos, totalContributions, followers, totalStars, totalCommits, totalAdditions, totalDeletions,
+                totalRepos          : formatNumber(public_repos + owned_private_repos),
+                totalContributions  : formatNumber(totalContributions),
+                followers           : formatNumber(followers),
+                totalStars          : formatNumber(totalStars),
+                totalCommits        : formatNumber(totalCommits),
+                totalAdditions      : formatNumber(totalAdditions),
+                totalDeletions      : formatNumber(totalDeletions),
+                totalLinesChanged   : formatNumber(totalAdditions + totalDeletions),
             };
         } catch (error) {
             console.error('Error:', error.message || error);
