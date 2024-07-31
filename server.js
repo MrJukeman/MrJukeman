@@ -7,14 +7,14 @@ dotenv.config();
 
 (async () => {
 
-    // await new ContributionBot(2792, 2024);
+    await new ContributionBot(2792, 2024);
 
-    const GitHubUsername    =   process.env.GITHUB_USERNAME;
-    const GithubAccessToken =   process.env.GITHUB_ACCESS_TOKEN;
+    // const GitHubUsername    =   process.env.GITHUB_USERNAME;
+    // const GithubAccessToken =   process.env.GITHUB_ACCESS_TOKEN;
 
-    const stats             =   new Statistics(GitHubUsername, GithubAccessToken);
-    const userStats         =   await stats.getUserStatistics();
-    if(userStats){
-        SVGUpdater.updateSVG(userStats, GitHubUsername);
-    }
+    // const stats             =   new Statistics(GitHubUsername, GithubAccessToken);
+    // const userStats         =   await stats.getUserStatistics();
+    // if(userStats){
+    //     SVGUpdater.updateSVG(userStats, GitHubUsername);
+    // }
 })();
