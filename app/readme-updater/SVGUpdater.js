@@ -5,12 +5,24 @@ class SVGUpdater {
         const dateOfBirth = new Date(dob);
         const currentDate = new Date();
 
-        const diffInMilliseconds    =   currentDate - dateOfBirth.getTime();
-        const ageInYears            =   Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25));
-        const ageInMonths           =   Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
-        const ageInDays             =   Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+        let years = currentDate.getFullYear() - dateOfBirth.getFullYear();
+        let months = currentDate.getMonth() - dateOfBirth.getMonth();
+        let days = currentDate.getDate() - dateOfBirth.getDate();
+        if (days < 0) {
+            months -= 1;
+            days += new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                0
+            ).getDate();
+        }
 
-        return `${ageInYears} years, ${ageInMonths} months, ${ageInDays} days`;
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        return `${years} years, ${months} months, ${days} days`;
     }
 
     static updateSVG(stats, username) {
