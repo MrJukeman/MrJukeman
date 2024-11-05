@@ -1,6 +1,9 @@
 name: Automated Script For SVG
 
 on:
+  schedule:
+    - cron: '15 21 * * *'
+
   push:
     branches:
       - main
@@ -37,4 +40,4 @@ jobs:
           git diff --cached --quiet || git commit -m "Update SVG"
           git push origin HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is available for this step
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
