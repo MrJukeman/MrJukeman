@@ -1,37 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" font-family="Andale Mono,AndaleMono,Consolas,monospace" width="1000px" height="425px" font-size="16px">
 <style>
-    .keyColor {
-    fill: #04060a;
-}
-
-.valueColor {
-    fill: #d81e5b;
-}
-
-.addColor {
-    fill: #3fb950;
-}
-
-.delColor {
-    fill: #f85149;
-}
-
-.main-box {
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    fill: #FAF9F6;
-    border-radius: 12px;
-    border: 1px solid rgba(209, 213, 219, 0.3);
-}
-
-.sub-box {
-    fill: #24292f;
-}
-
-text, tspan {
-    white-space: pre;
-}
-
+    {css}
 </style>
 
 <rect width="1000px" height="425px" class="main-box" rx="15"/>
@@ -57,7 +26,7 @@ text, tspan {
 
     <text x="370" y="30" class="sub-box">
         <tspan x="370" y="70"  class="keyColor">System.OS</tspan>            : <tspan class="valueColor">AryaOS: Commanding My Heart</tspan>
-        <tspan x="370" y="90"  class="keyColor">System.Uptime</tspan>        : <tspan class="valueColor">26 years, 4 months, 23 days</tspan>
+        <tspan x="370" y="90"  class="keyColor">System.Uptime</tspan>        : <tspan class="valueColor">{age}</tspan>
         <tspan x="370" y="110" class="keyColor">System.Host</tspan>          : <tspan class="valueColor">London Metropolitan University</tspan>
         <tspan x="370" y="130" class="keyColor">System.Kernel</tspan>        : <tspan class="valueColor">Sr.Software Engineer</tspan>
         <tspan x="370" y="170" class="keyColor">Languages</tspan>.<tspan class="keyColor">Programming</tspan>: <tspan class="valueColor">HTML, CSS, JavaScript, PHP, TypeScript</tspan>
@@ -67,10 +36,6 @@ text, tspan {
         <tspan x="370" y="270" class="keyColor">Info</tspan>.<tspan class="keyColor">Utils</tspan>           : <tspan class="valueColor">Socket, Git, DevOps</tspan>
         <tspan x="370" y="310" class="keyColor">GitHub Stats</tspan>
         <tspan x="370" y="330">————————————</tspan>
-        
-                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">5</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">1.1K</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">1.6K  </tspan>
-                <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">176</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">155  </tspan>
-                <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">444.7K</tspan> (<tspan class="addColor">429.7K++</tspan>, <tspan class="delColor">15K--</tspan>)
-            
+        {github_stats}
     </text>
 </svg>
