@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "resources/readme-template/main.arya",
+    "server.js",
+    "resources/readme-template/**/*.js",
+    "resources/readme-template/**/*.json",
+    "public/**/*.css"
+  ],
+  "ext": "js,json,arya",
+  "exec": "node server.js"
+}
