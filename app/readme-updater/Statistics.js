@@ -29,7 +29,7 @@ class Statistics {
                             defaultBranchRef {
                                 target {
                                     ... on Commit {
-                                        history(first: 100) {
+                                        history(first: 10) {
                                             totalCount
                                             edges {
                                                 node {
