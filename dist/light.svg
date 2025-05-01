@@ -1,35 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" font-family="Andale Mono,AndaleMono,Consolas,monospace" width="1000px" height="425px" font-size="16px">
 <style>
     .keyColor {
-    fill: #04060a;
+  fill: #04060a;
 }
 
 .valueColor {
-    fill: #d81e5b;
+  fill: #d81e5b;
 }
 
 .addColor {
-    fill: #3fb950;
+  fill: #3fb950;
 }
 
 .delColor {
-    fill: #f85149;
+  fill: #f85149;
 }
 
 .main-box {
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    fill: #FAF9F6;
-    border-radius: 12px;
-    border: 1px solid rgba(209, 213, 219, 0.3);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  fill: #faf9f6;
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
 }
 
 .sub-box {
-    fill: #24292f;
+  fill: #24292f;
 }
 
-text, tspan {
-    white-space: pre;
+text,
+tspan {
+  white-space: pre;
+}
+.letterA {
+  fill: skyblue;
+}
+
+.letterR {
+  fill: pink;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.letterA,
+.letterR {
+  animation: blink 1.5s infinite;
 }
 
 </style>
@@ -62,7 +85,7 @@ text, tspan {
         <tspan x="370" y="310" class="keyColor">GitHub Stats</tspan>
         <tspan x="370" y="330">————————————</tspan>
         
-                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">5</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">992</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">2.1K  </tspan>
+                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">5</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">994</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">2.1K  </tspan>
                 <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">219</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">160  </tspan>
                 <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">3.1M</tspan> (<tspan class="addColor">2.3M++</tspan>, <tspan class="delColor">799.4K--</tspan>)
             
