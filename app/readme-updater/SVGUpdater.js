@@ -2,15 +2,26 @@ import fs from 'fs';
 
 class SVGUpdater {
     static getAge(dob) {
-        const dateOfBirth = new Date(dob);
-        const currentDate = new Date();
-
-        const diffInMilliseconds    =   currentDate - dateOfBirth.getTime();
-        const ageInYears            =   Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25));
-        const ageInMonths           =   Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
-        const ageInDays             =   Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
-
-        return `${ageInYears} years, ${ageInMonths} months, ${ageInDays} days`;
+        const birthDate = new Date(dob);
+        const today = new Date();
+    
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+    
+        if (days < 0) {
+            // Go back one month
+            months--;
+            const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+            days += prevMonth.getDate();
+        }
+    
+        if (months < 0) {
+            months += 12;
+            years--;
+        }
+    
+        return `${years} years, ${months} months, ${days} days`;
     }
 
     static updateSVG(stats, username) {
