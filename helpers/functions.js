@@ -1,3 +1,8 @@
+/**
+ *
+ * @param num
+ * @returns {string}
+ */
 export function formatNumber(num) {
     if (num >= 1e12) {
         return (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
