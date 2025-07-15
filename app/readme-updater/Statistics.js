@@ -3,11 +3,23 @@ import GitHubAPI from './GitHubAPI.js';
 import {formatNumber} from "../../helpers/functions.js";
 
 class Statistics {
+
+
+    /**
+     *
+     * @param username
+     * @param accessToken
+     */
     constructor(username, accessToken) {
         this.username   = username;
         this.githubAPI  = new GitHubAPI(accessToken);
     }
 
+
+    /**
+     *
+     * @returns {Promise<{totalRepos: (string|*), totalContributions: (string|*), followers: (string|*), totalStars: (string|*), totalCommits: (string|*), totalAdditions: (string|*), totalDeletions: (string|*), totalLinesChanged: (string|*)}>}
+     */
     async getUserStatistics() {
         try {
             const [userData, contributionsResponse] = await Promise.all([
@@ -21,7 +33,7 @@ class Statistics {
             const query = `
             query($username: String!, $after: String) {
                 user(login: $username) {
-                    repositories(first: 100, after: $after, isFork: false) {
+                    repositories(first: 50, after: $after, isFork: false) {
                         nodes {
                             stargazers {
                                 totalCount

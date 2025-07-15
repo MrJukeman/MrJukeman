@@ -1,19 +1,25 @@
 import fs from 'fs';
 
-class SVGUpdater {
+class SvgUpdater {
+
+
+    /**
+     *
+     * @param dob
+     * @returns {string}
+     */
     static getAge(dob) {
         const birthDate = new Date(dob);
-        const today = new Date();
+        const today     = new Date();
     
-        let years = today.getFullYear() - birthDate.getFullYear();
-        let months = today.getMonth() - birthDate.getMonth();
-        let days = today.getDate() - birthDate.getDate();
+        let years   = today.getFullYear() - birthDate.getFullYear();
+        let months  = today.getMonth() - birthDate.getMonth();
+        let days    = today.getDate() - birthDate.getDate();
     
         if (days < 0) {
-            // Go back one month
             months--;
-            const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-            days += prevMonth.getDate();
+            const prevMonth  = new Date(today.getFullYear(), today.getMonth(), 0);
+            days            += prevMonth.getDate();
         }
     
         if (months < 0) {
@@ -24,12 +30,18 @@ class SVGUpdater {
         return `${years} years, ${months} months, ${days} days`;
     }
 
+
+    /**
+     *
+     * @param stats
+     * @param username
+     */
     static updateSVG(stats, username) {
         const themes = ["dark", "light"];
         themes.forEach((theme) => {
             let outputPath      = `dist/${theme}.svg`;
-            let svgContent      = fs.readFileSync(`resources/readme-template/main.arya`, 'utf8');
-            let cssContent      = fs.readFileSync(`public/assets/css/readme/${theme}.css`, 'utf8');
+            let svgContent      = fs.readFileSync(`resources/readme-template/main.svg`,     'utf8');
+            let cssContent      = fs.readFileSync(`public/assets/css/readme/${theme}.css`,  'utf8');
             let age             = this.getAge("1998-06-13");
             let content         = `
                 <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">${stats.totalRepos}</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">${stats.totalContributions}</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">${stats.totalCommits}  </tspan>
@@ -45,4 +57,4 @@ class SVGUpdater {
     }
 }
 
-export default SVGUpdater;
+export default SvgUpdater;

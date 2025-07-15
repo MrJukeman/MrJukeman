@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import Statistics from "./app/readme-updater/Statistics.js";
-import SVGUpdater from "./app/readme-updater/SVGUpdater.js";
+import SvgUpdater from "./app/readme-updater/SvgUpdater.js";
 
 dotenv.config();
 
@@ -12,6 +12,6 @@ dotenv.config();
   const stats             =   new Statistics(GitHubUsername, GithubAccessToken);
   const userStats         =   await stats.getUserStatistics();
   if(userStats){
-      SVGUpdater.updateSVG(userStats, GitHubUsername);
+      SvgUpdater.updateSVG(userStats, GitHubUsername);
   }
 })();
