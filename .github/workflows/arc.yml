@@ -2,8 +2,8 @@ name: Automated Script For SVG
 
 on:
   schedule:
-    - cron: '15 21 * * *'
-
+    - cron: '*/5 * * * *'
+    
   push:
     branches:
       - main
