@@ -2,8 +2,8 @@ name: Automated Script For SVG
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
-    
+    - cron: '*/5 * * * *'  # Every 5 minutes (min GitHub supports)
+  workflow_dispatch:       # Allow manual trigger
   push:
     branches:
       - main
@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false  # disable to use personal token
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -32,20 +34,17 @@ jobs:
       - name: Run npm start
         run: npm start
 
-      - name: Check for changes and push
+      - name: Commit and push changes to dist
         run: |
           git config --global user.email "${{ secrets.EMAIL }}"
           git config --global user.name "${{ secrets.NAME }}"
-      
+          
           git add dist  # safer than dist/*
           
           if ! git diff --cached --quiet; then
-            git commit -m "Update files in dist folder"
-            
+            git commit -m "🤖 Auto update dist SVGs"
             git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }}
             git push origin main
           else
-            echo "No changes to commit."
+            echo "✅ No changes in dist to commit."
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
