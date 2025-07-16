@@ -34,15 +34,16 @@ jobs:
 
       - name: Check for changes and push
         run: |
-          # Configure Git with user information from secrets
           git config --global user.email "${{ secrets.EMAIL }}"
           git config --global user.name "${{ secrets.NAME }}"
-
-          # Stage all changes in the dist folder and check for modifications
-          git add dist/*  # Change this if you want to add all files, or use . if needed
+      
+          git add dist  # safer than dist/*
+          
           if ! git diff --cached --quiet; then
             git commit -m "Update files in dist folder"
-            git push origin main  # Push changes to the main branch
+            
+            git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }}
+            git push origin main
           else
             echo "No changes to commit."
           fi
