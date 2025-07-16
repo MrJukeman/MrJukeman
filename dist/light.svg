@@ -58,7 +58,12 @@ tspan {
 </style>
 
 <rect width="1000px" height="425px" class="main-box" rx="15"/>
-
+    <defs>
+        <pattern id="scanlines" patternUnits="userSpaceOnUse" width="4" height="4">
+            <rect width="4" height="1" fill="rgba(255,255,255,0.05)" />
+        </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#scanlines)" />
     <text x="15" y="30" class="sub-box" font-family="monospace">
         <tspan x="15" y="120">      _     _          _     _   </tspan>
         <tspan x="15" y="140">     (c).-.(c)        (c).-.(c)  </tspan>
@@ -74,20 +79,20 @@ tspan {
 
     <text x="370" y="30" class="sub-box">
         <tspan x="370" y="70"  class="keyColor">System.OS</tspan>            : <tspan class="valueColor">AryaOS: Commanding My Heart</tspan>
-        <tspan x="370" y="90"  class="keyColor">System.Uptime</tspan>        : <tspan class="valueColor">26 years, 11 months, 19 days</tspan>
-        <tspan x="370" y="110" class="keyColor">System.Host</tspan>          : <tspan class="valueColor">Black Rock Nepal</tspan>
+        <tspan x="370" y="90"  class="keyColor">System.Uptime</tspan>        : <tspan class="valueColor">27 years, 1 months, 3 days</tspan>
+        <tspan x="370" y="110" class="keyColor">System.Host</tspan>          : <tspan class="valueColor">@Kyutefox, @Black Rock Nepal</tspan>
         <tspan x="370" y="130" class="keyColor">System.Kernel</tspan>        : <tspan class="valueColor">Sr.Software Engineer</tspan>
-        <tspan x="370" y="170" class="keyColor">Languages</tspan>.<tspan class="keyColor">Programming</tspan>: <tspan class="valueColor">HTML, CSS, JavaScript, PHP, TypeScript</tspan>
-        <tspan x="370" y="190" class="keyColor">Languages</tspan>.<tspan class="keyColor">Real</tspan>       : <tspan class="valueColor">English, Nepali</tspan>
-        <tspan x="370" y="230" class="keyColor">Info</tspan>.<tspan class="keyColor">Framework</tspan>       : <tspan class="valueColor">NodeJS, Laravel, NestJS</tspan>
-        <tspan x="370" y="250" class="keyColor">Info</tspan>.<tspan class="keyColor">Storage</tspan>         : <tspan class="valueColor">MySQL, MongoDB, Redis, PostgresSQL</tspan>
-        <tspan x="370" y="270" class="keyColor">Info</tspan>.<tspan class="keyColor">Utils</tspan>           : <tspan class="valueColor">Full Stack, Networking, DevOps</tspan>
-        <tspan x="370" y="310" class="keyColor">GitHub Stats</tspan>
+        <tspan x="370" y="170" class="keyColor">Lang</tspan>.<tspan class="keyColor">Core</tspan>            : <tspan class="valueColor">HTML, CSS, JavaScript, PHP, TypeScript</tspan>
+        <tspan x="370" y="190" class="keyColor">Lang</tspan>.<tspan class="keyColor">Human</tspan>           : <tspan class="valueColor">English, Nepali</tspan>
+        <tspan x="370" y="230" class="keyColor">Stack</tspan>.<tspan class="keyColor">Framework</tspan>      : <tspan class="valueColor">Backend Whisperer, Frontend Fused</tspan>
+        <tspan x="370" y="250" class="keyColor">Stack</tspan>.<tspan class="keyColor">Database</tspan>       : <tspan class="valueColor">Indexed, In-Memory, Scaled to Infinity</tspan>
+        <tspan x="370" y="270" class="keyColor">Stack</tspan>.<tspan class="keyColor">Utility</tspan>        : <tspan class="valueColor">CLI Native. Cloud Fluent. Versioned.</tspan>
+        <tspan x="370" y="310" class="keyColor">Telemetry</tspan>.<tspan class="keyColor">GitHub</tspan>
         <tspan x="370" y="330">————————————</tspan>
         
-                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">6</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">1.3K</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">8.8K  </tspan>
-                <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">451</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">161  </tspan>
-                <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">5.2M</tspan> (<tspan class="addColor">3.5M++</tspan>, <tspan class="delColor">1.7M--</tspan>)
+                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">7</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">1.3K</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">8.9K  </tspan>
+                <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">466</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">162  </tspan>
+                <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">4.8M</tspan> (<tspan class="addColor">3.1M++</tspan>, <tspan class="delColor">1.7M--</tspan>)
             
     </text>
 </svg>
