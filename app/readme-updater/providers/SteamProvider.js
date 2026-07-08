@@ -16,6 +16,8 @@ function isAchievementUnlocked(entry) {
   const value = entry?.achieved;
   return value === 1 || value === true || value === '1';
 }
+
+function formatPlaytime(minutes) {
   const hours = minutes / 60;
   if (hours >= 1000) {
     return `${(hours / 1000).toFixed(1)}k`;
