@@ -4,7 +4,7 @@ import ConfigLoader from '../ConfigLoader.js';
 
 const API_BASE = 'https://api.steampowered.com';
 const PERFECT_SCAN_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
-const PERFECT_SCAN_VERSION = 2;
+const PERFECT_SCAN_VERSION = 3;
 const ACHIEVEMENT_CONCURRENCY = 4;
 const ACHIEVEMENT_CHECK_DELAY_MS = 120;
 
@@ -61,6 +61,7 @@ class SteamProvider {
       config.steam?.profileUrl || `https://steamcommunity.com/id/${this.vanityUrl}/games/?tab=perfect`;
     this.topCount = config.steam?.topCount ?? 4;
     this.perfectCount = config.steam?.perfectCount ?? 4;
+    this.extraPerfectAppIds = config.steam?.extraPerfectAppIds ?? [];
   }
 
   isConfigured() {
@@ -148,7 +149,7 @@ class SteamProvider {
       steamid: steamId,
       include_appinfo: 1,
       include_played_free_games: 1,
-      include_free_sub: 0,
+      include_free_sub: 1,
     });
 
     const games = data?.response?.games;
@@ -189,13 +190,16 @@ class SteamProvider {
       };
     }
 
-    const candidates = [...games].sort((a, b) => b.playtime_forever - a.playtime_forever);
+    const candidates = this.buildPerfectCandidates(games);
     const perfect = [];
 
     await mapPool(candidates, ACHIEVEMENT_CONCURRENCY, async (game) => {
       await sleep(ACHIEVEMENT_CHECK_DELAY_MS);
-      const complete = await this.isGamePerfect(steamId, game.appid);
-      if (complete) {
+      const status = await this.getAchievementStatus(steamId, game.appid);
+      if (status.total > 0) {
+        console.log(`Steam achievements: ${game.name} (${game.appid}) ${status.unlocked}/${status.total}`);
+      }
+      if (status.perfect) {
         perfect.push({
           appId: game.appid,
           name: game.name,
@@ -205,7 +209,7 @@ class SteamProvider {
     });
 
     perfect.sort((a, b) => a.name.localeCompare(b.name));
-    console.log(`Steam perfect scan: found ${perfect.length} of ${candidates.length} owned games`);
+    console.log(`Steam perfect scan: found ${perfect.length} of ${candidates.length} candidate games`);
 
     return {
       games: perfect,
@@ -215,45 +219,90 @@ class SteamProvider {
     };
   }
 
-  async isGamePerfect(steamId, appId) {
+  buildPerfectCandidates(games) {
+    const cachedPerfect = Cache.read()?.steam?.perfectGamesAll ?? [];
+    const extraAppIds = [
+      ...this.extraPerfectAppIds,
+      ...cachedPerfect.map((game) => game.appId),
+    ];
+    const byAppId = new Map();
+
+    for (const game of games) {
+      byAppId.set(game.appid, game);
+    }
+
+    for (const appId of extraAppIds) {
+      if (!byAppId.has(appId)) {
+        byAppId.set(appId, {
+          appid: appId,
+          name: `App ${appId}`,
+          playtime_forever: 0,
+        });
+      }
+    }
+
+    return [...byAppId.values()].sort((a, b) => b.playtime_forever - a.playtime_forever);
+  }
+
+  async getAchievementStatus(steamId, appId) {
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
-        const [playerData, schemaData] = await Promise.all([
-          this.apiGet('/ISteamUserStats/GetPlayerAchievements/v1/', {
-            steamid: steamId,
-            appid: appId,
-            l: 'english',
-          }),
-          this.apiGet('/ISteamUserStats/GetSchemaForGame/v2/', {
-            appid: appId,
-            l: 'english',
-          }),
-        ]);
-
-        const schemaAchievements = schemaData?.game?.availableGameStats?.achievements;
-        if (!Array.isArray(schemaAchievements) || schemaAchievements.length === 0) {
-          return false;
-        }
+        const playerData = await this.apiGet('/ISteamUserStats/GetPlayerAchievements/v1/', {
+          steamid: steamId,
+          appid: appId,
+          l: 'english',
+        });
 
         const playerAchievements = playerData?.playerstats?.achievements;
         if (!Array.isArray(playerAchievements) || playerAchievements.length === 0) {
-          return false;
+          return { perfect: false, unlocked: 0, total: 0 };
         }
 
-        const unlockedByApiName = new Map(
-          playerAchievements.map((entry) => [entry.apiname, isAchievementUnlocked(entry)]),
-        );
+        const unlocked = playerAchievements.filter(isAchievementUnlocked).length;
+        const total = playerAchievements.length;
+        const allPlayerUnlocked = unlocked === total;
 
-        return schemaAchievements.every((schemaEntry) => unlockedByApiName.get(schemaEntry.name) === true);
+        if (!allPlayerUnlocked) {
+          return { perfect: false, unlocked, total };
+        }
+
+        let schemaTotal = 0;
+        try {
+          const schemaData = await this.apiGet('/ISteamUserStats/GetSchemaForGame/v2/', {
+            appid: appId,
+            l: 'english',
+          });
+          const schemaAchievements = schemaData?.game?.availableGameStats?.achievements;
+          if (Array.isArray(schemaAchievements) && schemaAchievements.length > 0) {
+            schemaTotal = schemaAchievements.length;
+            const unlockedByApiName = new Map(
+              playerAchievements.map((entry) => [entry.apiname.toLowerCase(), isAchievementUnlocked(entry)]),
+            );
+            const schemaPerfect = schemaAchievements.every(
+              (schemaEntry) => unlockedByApiName.get(schemaEntry.name.toLowerCase()) === true,
+            );
+            if (schemaPerfect) {
+              return { perfect: true, unlocked, total: schemaTotal };
+            }
+            if (unlocked >= schemaTotal) {
+              return { perfect: true, unlocked, total: schemaTotal };
+            }
+            return { perfect: false, unlocked, total: schemaTotal };
+          }
+        } catch {
+          // Fall back to player-only completion when schema is unavailable.
+        }
+
+        return { perfect: allPlayerUnlocked, unlocked, total };
       } catch {
         if (attempt === 3) {
-          return false;
+          return { perfect: false, unlocked: 0, total: 0 };
         }
         await sleep(2 ** attempt * 400);
       }
     }
 
-    return false;
+    return { perfect: false, unlocked: 0, total: 0 };
   }
 }
 
