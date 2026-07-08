@@ -1,15 +1,16 @@
-name: Automated Script For SVG
+name: AryaOS README Kernel
 
 on:
   schedule:
-    - cron: '15 20 * * *'  # Every day at 2:00 AM NPT (UTC+5:45)
+    - cron: '0 * * * *'
+    - cron: '15 20 * * *'
   workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
-  run-npm-start:
+  rebuild-readme-kernel:
     runs-on: ubuntu-latest
 
     env:
@@ -19,32 +20,32 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          persist-credentials: false  # disable to use personal token
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run npm start
+      - name: Rebuild SVG kernel
         run: npm start
 
-      - name: Commit and push changes to dist
+      - name: Commit and push dist artifacts
         run: |
           git config --global user.email "${{ secrets.EMAIL }}"
           git config --global user.name "${{ secrets.NAME }}"
-          
-          git add dist  # safer than dist/*
-          
+
+          git add dist/
+
           if ! git diff --cached --quiet; then
-            git commit -m "🤖 Auto update dist SVGs"
+            git commit -m "🤖 AryaOS: auto-sync README kernel"
             git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }}
             git push origin main
           else
-            echo "✅ No changes in dist to commit."
+            echo "✅ Kernel already up to date."
           fi
