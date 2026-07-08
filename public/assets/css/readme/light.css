@@ -1,43 +1,103 @@
 .keyColor {
-  fill: #04060a;
+  fill: #bf3989;
 }
-
 .valueColor {
-  fill: #d81e5b;
-}
-
-.addColor {
-  fill: #3fb950;
-}
-
-.delColor {
-  fill: #f85149;
-}
-
-.main-box {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  fill: #faf9f6;
-  border-radius: 12px;
-  border: 1px solid rgba(209, 213, 219, 0.3);
-}
-
-.sub-box {
   fill: #24292f;
 }
-
-text,
-tspan {
-  white-space: pre;
+.dim {
+  fill: #8c959f;
 }
-.letterA {
-  fill: skyblue;
+.addColor {
+  fill: #1a7f37;
 }
-
-.letterR {
-  fill: pink;
+.delColor {
+  fill: #cf222e;
 }
-
+.main-box {
+  fill: #ffffff;
+  stroke: rgba(27, 31, 36, 0.1);
+  stroke-width: 1;
+}
+.panel {
+  fill: rgba(27, 31, 36, 0.03);
+  stroke: rgba(27, 31, 36, 0.08);
+  stroke-width: 1;
+}
+.hero-title {
+  fill: #1f2328;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+.hero-version {
+  fill: #bf3989;
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: normal;
+}
+.hero-sub {
+  fill: #656d76;
+  font-size: 12px;
+}
+.hero-user {
+  fill: #656d76;
+  font-size: 11px;
+}
+.header-divider {
+  stroke: rgba(27, 31, 36, 0.12);
+  stroke-width: 1;
+}
+.boot-line {
+  fill: #656d76;
+  font-size: 11px;
+}
+.section-label {
+  fill: #0969da;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.muted {
+  fill: #656d76;
+  font-size: 11px;
+}
+.row {
+  fill: #24292f;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.mono {
+  fill: #24292f;
+  font-size: 12px;
+}
+.link {
+  fill: #0969da;
+  font-size: 12px;
+}
+.dmesg {
+  fill: #1a7f37;
+  font-size: 11px;
+}
+.footer {
+  fill: #656d76;
+  font-size: 11px;
+}
+.spark-bar {
+  fill: #2da44e;
+}
+.cursor {
+  fill: #1a7f37;
+  animation: blink 1s infinite;
+}
+.butterflies-back .butterfly {
+  opacity: 0.18;
+}
+.butterflies-front .butterfly {
+  opacity: 0.42;
+}
+.butterfly-body {
+  stroke: #57606a;
+}
 @keyframes blink {
   0%,
   100% {
@@ -46,9 +106,4 @@ tspan {
   50% {
     opacity: 0;
   }
-}
-
-.letterA,
-.letterR {
-  animation: blink 1.5s infinite;
 }

@@ -2,7 +2,10 @@
   fill: #ffa657;
 }
 .valueColor {
-  fill: #a5d6ff;
+  fill: #e6edf3;
+}
+.dim {
+  fill: #484f58;
 }
 .addColor {
   fill: #3fb950;
@@ -11,27 +14,90 @@
   fill: #f85149;
 }
 .main-box {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  fill: rgb(15, 18, 20);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
+  fill: #0d1117;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
 }
-.sub-box {
-  fill: #f5f5f5;
+.panel {
+  fill: rgba(255, 255, 255, 0.03);
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1;
 }
-text,
-tspan {
-  white-space: pre;
+.hero-title {
+  fill: #f0f6fc;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 3px;
 }
-.letterA {
-  fill: skyblue;
+.hero-version {
+  fill: #ffa657;
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: normal;
 }
-
-.letterR {
-  fill: pink;
+.hero-sub {
+  fill: #8b949e;
+  font-size: 12px;
 }
-
+.hero-user {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.header-divider {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+.boot-line {
+  fill: #7d8590;
+  font-size: 11px;
+}
+.section-label {
+  fill: #79c0ff;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.muted {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.row {
+  fill: #c9d1d9;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.mono {
+  fill: #c9d1d9;
+  font-size: 12px;
+}
+.link {
+  fill: #58a6ff;
+  font-size: 12px;
+}
+.dmesg {
+  fill: #7ee787;
+  font-size: 11px;
+}
+.footer {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.spark-bar {
+  fill: #238636;
+}
+.cursor {
+  fill: #39d353;
+  animation: blink 1s infinite;
+}
+.butterflies-back .butterfly {
+  opacity: 0.22;
+}
+.butterflies-front .butterfly {
+  opacity: 0.48;
+}
+.butterfly-body {
+  stroke: #2d333b;
+}
 @keyframes blink {
   0%,
   100% {
@@ -40,9 +106,4 @@ tspan {
   50% {
     opacity: 0;
   }
-}
-
-.letterA,
-.letterR {
-  animation: blink 1.5s infinite;
 }

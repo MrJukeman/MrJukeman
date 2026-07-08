@@ -1,10 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" font-family="Andale Mono,AndaleMono,Consolas,monospace" width="1000px" height="425px" font-size="16px">
-<style>
-    .keyColor {
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="680" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13">
+  <title>AryaOS — live engineering interface</title>
+  <style>.keyColor {
   fill: #ffa657;
 }
 .valueColor {
-  fill: #a5d6ff;
+  fill: #e6edf3;
+}
+.dim {
+  fill: #484f58;
 }
 .addColor {
   fill: #3fb950;
@@ -13,27 +17,90 @@
   fill: #f85149;
 }
 .main-box {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  fill: rgb(15, 18, 20);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
+  fill: #0d1117;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
 }
-.sub-box {
-  fill: #f5f5f5;
+.panel {
+  fill: rgba(255, 255, 255, 0.03);
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1;
 }
-text,
-tspan {
-  white-space: pre;
+.hero-title {
+  fill: #f0f6fc;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 3px;
 }
-.letterA {
-  fill: skyblue;
+.hero-version {
+  fill: #ffa657;
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: normal;
 }
-
-.letterR {
-  fill: pink;
+.hero-sub {
+  fill: #8b949e;
+  font-size: 12px;
 }
-
+.hero-user {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.header-divider {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+.boot-line {
+  fill: #7d8590;
+  font-size: 11px;
+}
+.section-label {
+  fill: #79c0ff;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.muted {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.row {
+  fill: #c9d1d9;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.mono {
+  fill: #c9d1d9;
+  font-size: 12px;
+}
+.link {
+  fill: #58a6ff;
+  font-size: 12px;
+}
+.dmesg {
+  fill: #7ee787;
+  font-size: 11px;
+}
+.footer {
+  fill: #6e7681;
+  font-size: 11px;
+}
+.spark-bar {
+  fill: #238636;
+}
+.cursor {
+  fill: #39d353;
+  animation: blink 1s infinite;
+}
+.butterflies-back .butterfly {
+  opacity: 0.22;
+}
+.butterflies-front .butterfly {
+  opacity: 0.48;
+}
+.butterfly-body {
+  stroke: #2d333b;
+}
 @keyframes blink {
   0%,
   100% {
@@ -43,50 +110,473 @@ tspan {
     opacity: 0;
   }
 }
-
-.letterA,
-.letterR {
-  animation: blink 1.5s infinite;
-}
-
 </style>
 
-<rect width="1000px" height="425px" class="main-box" rx="15"/>
-    <defs>
-        <pattern id="scanlines" patternUnits="userSpaceOnUse" width="4" height="4">
-            <rect width="4" height="1" fill="rgba(255,255,255,0.05)" />
-        </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#scanlines)" />
-    <text x="15" y="30" class="sub-box" font-family="monospace">
-        <tspan x="15" y="120">      _     _          _     _   </tspan>
-        <tspan x="15" y="140">     (c).-.(c)        (c).-.(c)  </tspan>
-        <tspan x="15" y="160">      / ._. \          / ._. \   </tspan>
-        <tspan x="15" y="180">    __\( Y )/__      __\( Y )/__ </tspan>
-        <tspan x="15" y="200">   (_.-/'-'\-._)    (_.-/'-'\-._)</tspan>
-        <tspan x="15" y="220">      || <tspan class="letterA">A</tspan> ||          || <tspan class="letterR">R</tspan> ||   </tspan>
-        <tspan x="15" y="240">    _.' `-' '._      _.' `-' '._ </tspan>
-        <tspan x="15" y="260">   (.-./`-'\.-.)    (.-./`-`\.-.)</tspan>
-        <tspan x="15" y="280">    `-'     `-'      `-'     `-' </tspan>
-    </text>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+    </pattern>
+    <linearGradient id="header-glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffa657" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#a5d6ff" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
 
+  <rect width="1000" height="680" class="main-box" rx="16" />
+  <rect width="1000" height="680" fill="url(#grid)" rx="16" />
+  <rect x="1" y="1" width="998" height="88" fill="url(#header-glow)" rx="15" />
 
-    <text x="370" y="30" class="sub-box">
-        <tspan x="370" y="70"  class="keyColor">System.OS</tspan>            : <tspan class="valueColor">AryaOS: Commanding My Heart</tspan>
-        <tspan x="370" y="90"  class="keyColor">System.Uptime</tspan>        : <tspan class="valueColor">27 years, 2 months, 24 days</tspan>
-        <tspan x="370" y="110" class="keyColor">System.Host</tspan>          : <tspan class="valueColor">@Kyutefox, @Black Rock Nepal</tspan>
-        <tspan x="370" y="130" class="keyColor">System.Kernel</tspan>        : <tspan class="valueColor">Sr.Software Engineer</tspan>
-        <tspan x="370" y="170" class="keyColor">Lang</tspan>.<tspan class="keyColor">Core</tspan>            : <tspan class="valueColor">HTML, CSS, JavaScript, PHP, TypeScript</tspan>
-        <tspan x="370" y="190" class="keyColor">Lang</tspan>.<tspan class="keyColor">Human</tspan>           : <tspan class="valueColor">English, Nepali</tspan>
-        <tspan x="370" y="230" class="keyColor">Stack</tspan>.<tspan class="keyColor">Framework</tspan>      : <tspan class="valueColor">Backend Whisperer, Frontend Fused</tspan>
-        <tspan x="370" y="250" class="keyColor">Stack</tspan>.<tspan class="keyColor">Database</tspan>       : <tspan class="valueColor">Indexed, In-Memory, Scaled to Infinity</tspan>
-        <tspan x="370" y="270" class="keyColor">Stack</tspan>.<tspan class="keyColor">Utility</tspan>        : <tspan class="valueColor">CLI Native. Cloud Fluent. Versioned.</tspan>
-        <tspan x="370" y="310" class="keyColor">Telemetry</tspan>.<tspan class="keyColor">GitHub</tspan>
-        <tspan x="370" y="330">————————————</tspan>
-        
-                <tspan x="370" y="350" class="keyColor">Repos</tspan>: <tspan class="valueColor">6</tspan>    {<tspan class="keyColor"> Contributed</tspan>: <tspan class="valueColor">1.1K</tspan> }  | <tspan class="keyColor">Commits</tspan>: <tspan class="valueColor">15.8K  </tspan>
-                <tspan x="370" y="375" class="keyColor">Stars</tspan>: <tspan class="valueColor">482</tspan>  | <tspan class="keyColor">Followers</tspan>: <tspan class="valueColor">166  </tspan>
-                <tspan x="370" y="398" class="keyColor">Lines of Code</tspan>: <tspan class="valueColor">4.8M</tspan> (<tspan class="addColor">3.1M++</tspan>, <tspan class="delColor">1.7M--</tspan>)
-            
-    </text>
+  <g class="butterflies-back" style="pointer-events:none">
+      <g class="butterfly" opacity="0.51">
+        <animateMotion dur="49s" repeatCount="indefinite" path="M 115 42 C 214 117, 140 120, 142 98 C 232 72, 121 94, 57 94 C 180 28, 75 92, 258 96 C 43 35, 90 115, 42 18 C 100 103, 67 116, 52 108 C 202 85, 213 33, 215 69" rotate="auto" />
+        <g transform="scale(1.24)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FFE66D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.76s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#FF5757" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.76s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#FF5757" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.76s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FFE66D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.76s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FFE66D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.46">
+        <animateMotion dur="43s" repeatCount="indefinite" path="M 241 648 C 228 628, 130 556, 200 609 C 57 572, 17 532, 188 623 C 243 632, 256 649, 21 628 C 218 616, 203 570, 225 597 C 122 586, 204 638, 41 597 C 139 547, 198 638, 21 534" rotate="auto" />
+        <g transform="scale(0.99)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF9F43" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF9F43" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF9F43" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.61">
+        <animateMotion dur="63s" repeatCount="indefinite" path="M 211 251 C 167 439, 132 216, 130 250 C 104 435, 147 402, 18 382 C 213 318, 149 323, 37 438 C 61 235, 207 295, 165 384 C 95 371, 24 395, 172 353 C 51 242, 37 237, 205 309" rotate="auto" />
+        <g transform="scale(0.99)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#F472B6" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#F472B6" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#F472B6" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.59">
+        <animateMotion dur="65s" repeatCount="indefinite" path="M 497 29 C 624 41, 633 65, 557 50 C 350 75, 350 101, 625 28 C 505 64, 501 29, 439 30 C 385 80, 463 60, 675 19 C 375 81, 373 78, 552 34 C 360 73, 321 67, 612 64" rotate="auto" />
+        <g transform="scale(1.18)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF6B9D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.14s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.14s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.14s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF6B9D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.14s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF6B9D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.47">
+        <animateMotion dur="46s" repeatCount="indefinite" path="M 484 591 C 624 529, 345 553, 545 654 C 321 533, 478 576, 507 554 C 372 532, 640 659, 608 562 C 424 599, 553 614, 394 603 C 639 563, 390 653, 469 593 C 620 635, 375 538, 391 619" rotate="auto" />
+        <g transform="scale(0.89)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.90s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.90s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.90s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.90s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#C44DFF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.71">
+        <animateMotion dur="57s" repeatCount="indefinite" path="M 817 49 C 753 48, 860 94, 805 34 C 976 28, 741 48, 766 40 C 868 120, 911 73, 857 43 C 778 45, 889 56, 915 121" rotate="auto" />
+        <g transform="scale(0.67)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF6B9D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.16s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.16s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.16s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF6B9D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.16s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF6B9D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.66">
+        <animateMotion dur="51s" repeatCount="indefinite" path="M 802 583 C 753 589, 881 624, 891 531 C 841 660, 838 626, 862 592 C 960 563, 956 625, 824 616 C 870 593, 843 641, 928 586 C 864 637, 925 532, 776 584" rotate="auto" />
+        <g transform="scale(1.12)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.96s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.36">
+        <animateMotion dur="51s" repeatCount="indefinite" path="M 819 278 C 961 344, 783 433, 782 211 C 797 240, 843 267, 862 439 C 873 332, 792 211, 923 362 C 964 381, 869 303, 846 275 C 864 412, 962 280, 809 430" rotate="auto" />
+        <g transform="scale(0.96)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.94s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#FF6B9D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.94s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#FF6B9D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.94s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.94s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#A78BFA" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.65">
+        <animateMotion dur="66s" repeatCount="indefinite" path="M 432 431 C 499 452, 509 328, 533 384 C 452 323, 338 382, 538 407 C 328 413, 374 386, 619 438 C 413 303, 606 344, 587 316" rotate="auto" />
+        <g transform="scale(0.67)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.18s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.18s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.18s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.18s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    </g>
+
+  
+      
+      <text x="28" y="36" class="hero-title"><tspan>ARYAOS</tspan><tspan class="hero-version" dx="18">v6.2026.offline</tspan></text>
+      <text x="28" y="56" class="hero-sub">building systems that ship, scale, and stay sane</text>
+      <text x="28" y="76" class="hero-user">@MrJukeman · live engineering interface</text>
+      <text x="972" y="42" text-anchor="end" class="boot-line">boot ▸ aryaos 6.2026.offline ▸ github mounted ▸ telemetry live</text>
+    
+      <line x1="28" y1="94" x2="972" y2="94" class="header-divider" />
+      <rect x="28" y="100" width="462" height="118" rx="10" class="panel" />
+      <rect x="510" y="100" width="462" height="118" rx="10" class="panel" />
+      <rect x="28" y="230" width="462" height="112" rx="10" class="panel" />
+      <rect x="510" y="230" width="462" height="112" rx="10" class="panel" />
+      
+      <text x="56" y="122" class="section-label">◈ IDENTITY</text>
+      <text y="146" class="row"><tspan x="56" class="keyColor">Platform</tspan><tspan x="196" class="valueColor">AryaOS // Heartbeat Kernel</tspan></text>
+      <text y="168" class="row"><tspan x="56" class="keyColor">Role</tspan><tspan x="196" class="valueColor">Senior Software Engineer</tspan></text>
+      <text y="190" class="row"><tspan x="56" class="keyColor">Crew</tspan><tspan x="196" class="valueColor">Kyutefox · Black Rock Nepal</tspan></text>
+      <text y="212" class="row"><tspan x="56" class="keyColor">Runtime.Age</tspan><tspan x="196" class="valueColor">28 years, 0 months, 26 days</tspan></text>
+    
+      
+      <text x="538" y="122" class="section-label">◈ RUNTIME</text>
+      <text y="146" class="row"><tspan x="538" class="keyColor">Clock.NPT</tspan><tspan x="678" class="valueColor">07/09/2026, 01:32:59</tspan></text>
+      <text y="168" class="row"><tspan x="538" class="keyColor">Build.Channel</tspan><tspan x="678" class="valueColor">6.2026.offline</tspan></text>
+      <text y="190" class="row"><tspan x="538" class="keyColor">Sync.Status</tspan><tspan x="678" class="valueColor">online · hash offline</tspan></text>
+      <text y="212" class="row"><tspan x="538" class="keyColor">Toolkit</tspan><tspan x="678" class="valueColor">Git · Docker · CI/CD · Linux Toolchain</tspan></text>
+    
+      
+      <text x="56" y="252" class="section-label">◈ ARSENAL</text>
+      <text y="274" class="row"><tspan x="56" class="keyColor">Syntax</tspan><tspan x="196" class="valueColor">TypeScript · JavaScript · PHP · HTML/CSS</tspan></text>
+      <text y="294" class="row"><tspan x="56" class="keyColor">Speech</tspan><tspan x="196" class="valueColor">English · Nepali</tspan></text>
+      <text y="314" class="row"><tspan x="56" class="keyColor">Systems</tspan><tspan x="196" class="valueColor">Full-Stack Architecture · API-First Design</tspan></text>
+      <text y="334" class="row"><tspan x="56" class="keyColor">Data</tspan><tspan x="196" class="valueColor">SQL · NoSQL · Redis · Search at Scale</tspan></text>
+    
+      
+      <text x="538" y="252" class="section-label">◈ SIGNAL.FEED</text>
+      <text y="274" class="row">
+        <tspan x="538" class="keyColor">Repos</tspan><tspan x="612" class="valueColor">0</tspan><tspan class="addColor"></tspan>
+        <tspan x="730" class="keyColor">Stars</tspan><tspan x="804" class="valueColor">0</tspan><tspan class="addColor"></tspan>
+      </text>
+      <text y="294" class="row">
+        <tspan x="538" class="keyColor">Commits</tspan><tspan x="612" class="valueColor">0</tspan><tspan class="addColor"></tspan>
+        <tspan x="730" class="keyColor">Followers</tspan><tspan x="804" class="valueColor">0</tspan><tspan class="addColor"></tspan>
+      </text>
+      <text y="314" class="row">
+        <tspan x="538" class="keyColor">Contributions</tspan><tspan x="612" class="valueColor">0</tspan><tspan class="addColor"></tspan>
+        <tspan x="730" class="keyColor">Pulse</tspan><tspan x="804" class="valueColor">▬ 0%</tspan>
+      </text>
+      <text y="334" class="row">
+        <tspan x="538" class="keyColor">LOC Delta</tspan><tspan x="612" class="valueColor">0</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+0</tspan><tspan class="dim"> / </tspan><tspan class="delColor">-0</tspan><tspan class="dim">)</tspan>
+        <tspan x="730" class="keyColor">Streak</tspan><tspan x="804" class="valueColor">0d</tspan><tspan class="dim"> / </tspan><tspan class="valueColor">0d</tspan>
+      </text>
+    
+    
+
+  
+      <text x="28" y="364" class="section-label">CONTRIBUTION MAP</text>
+      <text x="228" y="364" class="muted">52-week signal density</text>
+      <g class="heatmap"><rect x="28" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="28" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="37" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="46" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="55" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="64" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="73" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="82" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="91" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="100" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="109" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="118" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="127" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="136" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="145" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="154" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="163" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="172" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="181" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="190" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="199" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="208" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="217" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="226" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="235" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="244" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="253" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="262" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="271" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="280" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="289" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="298" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="307" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="316" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="325" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="334" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="343" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="352" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="361" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="370" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="379" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="388" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="397" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="406" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="415" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="424" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="433" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="442" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="451" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="460" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="469" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="478" y="430" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="376" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="385" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="394" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="403" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="412" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="421" width="7" height="7" rx="2" fill="#161b22"/><rect x="487" y="430" width="7" height="7" rx="2" fill="#161b22"/></g>
+      <text x="28" y="457" class="muted">darker = quiet · greener = shipping code</text>
+    
+  
+      <rect x="28" y="466" width="944" height="48" rx="10" class="panel" />
+      <text x="56" y="486" class="section-label">PULSE · 14-DAY OUTPUT</text>
+      <g class="sparkline"><rect x="56" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="120.28571428571429" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="184.57142857142858" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="248.8571428571429" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="313.14285714285717" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="377.42857142857144" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="441.7142857142858" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="506.00000000000006" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="570.2857142857143" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="634.5714285714287" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="698.8571428571429" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="763.1428571428572" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="827.4285714285716" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/><rect x="891.7142857142858" y="509" width="61.28571428571429" height="3" class="spark-bar" rx="2"/></g>
+    
+
+  
+      <rect x="28" y="528" width="300" height="132" rx="10" class="panel" />
+      <rect x="348" y="528" width="300" height="132" rx="10" class="panel" />
+      <rect x="668" y="528" width="304" height="132" rx="10" class="panel" />
+      
+      <text x="56" y="550" class="section-label">PROCESS.MONITOR</text>
+      <text y="568" class="muted">
+        <tspan x="56">PID</tspan>
+        <tspan x="128">LOAD</tspan>
+        <tspan x="196">RUNTIME</tspan>
+      </text>
+    <text y="586" class="mono"><tspan x="56" class="keyColor">1337</tspan><tspan x="128" class="valueColor">42%</tspan><tspan x="196">typescript</tspan></text><text y="604" class="mono"><tspan x="56" class="keyColor">1226</tspan><tspan x="128" class="valueColor">28%</tspan><tspan x="196">javascript</tspan></text><text y="622" class="mono"><tspan x="56" class="keyColor">1115</tspan><tspan x="128" class="valueColor">15%</tspan><tspan x="196">php</tspan></text>
+      
+      <text x="364" y="550" class="section-label">OPEN.PORTS</text>
+      <text y="568" class="muted">
+        <tspan x="364">PORT</tspan>
+        <tspan x="430">SERVICE</tspan>
+      </text>
+    <a href="https://github.com/MrJukeman"><text y="586" class="link"><tspan x="364">:443</tspan><tspan x="430">github.com/MrJukeman</tspan></text></a><a href="https://github.com/MrJukeman/MrJukeman"><text y="606" class="link"><tspan x="364">:8080</tspan><tspan x="430">readme-engine</tspan></text></a><a href="https://github.com/Kyutefox"><text y="626" class="link"><tspan x="364">:3000</tspan><tspan x="430">kyutefox</tspan></text></a>
+      <text x="684" y="550" class="section-label">EVENT.STREAM</text><text x="684" y="574" class="dmesg">[kernel] github: awaiting live telemetry sync</text>
+    
+
+  <text x="28" y="672" class="footer">build offline · synced 07/09/2026, 01:32:59 NPT · butterflies in flight · <tspan class="cursor">█</tspan></text>
+
+  <g class="butterflies-front" style="pointer-events:none">
+      <g class="butterfly" opacity="0.70">
+        <animateMotion dur="55s" repeatCount="indefinite" path="M 746 63 C 779 95, 884 28, 807 62 C 884 66, 757 94, 927 89 C 975 127, 760 69, 768 16 C 746 88, 966 89, 974 121 C 811 108, 920 30, 793 89" rotate="auto" />
+        <g transform="scale(1.01)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FFE66D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.04s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.04s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.04s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FFE66D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.04s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FFE66D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.67">
+        <animateMotion dur="50s" repeatCount="indefinite" path="M 784 568 C 933 609, 902 606, 925 617 C 877 568, 960 658, 867 626 C 876 647, 899 634, 889 543 C 743 654, 833 591, 812 598 C 805 551, 772 545, 784 532 C 793 644, 983 543, 964 645" rotate="auto" />
+        <g transform="scale(0.65)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.98s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.53">
+        <animateMotion dur="63s" repeatCount="indefinite" path="M 872 403 C 900 251, 964 284, 876 325 C 909 225, 853 312, 857 297 C 893 304, 897 422, 786 267 C 982 212, 781 435, 795 343" rotate="auto" />
+        <g transform="scale(0.97)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.56">
+        <animateMotion dur="44s" repeatCount="indefinite" path="M 326 430 C 666 318, 610 336, 457 419 C 527 421, 608 415, 385 327 C 417 402, 591 378, 453 435 C 434 452, 383 368, 473 332 C 329 382, 525 303, 386 349" rotate="auto" />
+        <g transform="scale(1.23)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.20s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.20s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.20s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.20s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.49">
+        <animateMotion dur="56s" repeatCount="indefinite" path="M 168 43 C 50 43, 74 114, 42 34 C 251 99, 73 30, 113 78 C 67 75, 222 26, 112 111 C 175 117, 153 38, 228 81 C 30 30, 171 128, 242 116 C 134 36, 178 117, 222 78" rotate="auto" />
+        <g transform="scale(0.77)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#00D4AA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.78s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.78s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.78s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#00D4AA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.78s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#00D4AA" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.37">
+        <animateMotion dur="55s" repeatCount="indefinite" path="M 56 632 C 28 549, 167 624, 62 566 C 50 656, 172 534, 131 595 C 236 639, 153 547, 168 648 C 119 551, 33 609, 108 586 C 167 601, 82 553, 232 619 C 250 642, 191 548, 98 534" rotate="auto" />
+        <g transform="scale(1.05)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#00D4AA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#00D4AA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.97s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#4DC9FF" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.44">
+        <animateMotion dur="67s" repeatCount="indefinite" path="M 180 415 C 81 272, 88 346, 66 351 C 152 244, 172 349, 161 422 C 54 304, 34 434, 78 384 C 198 335, 21 215, 132 403" rotate="auto" />
+        <g transform="scale(0.71)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF9F43" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.99s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.99s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.99s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF9F43" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.99s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF9F43" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.59">
+        <animateMotion dur="65s" repeatCount="indefinite" path="M 566 18 C 490 106, 498 29, 517 66 C 442 66, 368 60, 602 74 C 450 36, 352 39, 409 54 C 399 84, 526 31, 340 16 C 382 41, 456 50, 587 55 C 477 70, 535 96, 430 81" rotate="auto" />
+        <g transform="scale(0.77)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF6B9D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.85s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.85s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.85s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF6B9D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.85s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF6B9D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.56">
+        <animateMotion dur="53s" repeatCount="indefinite" path="M 626 559 C 501 546, 326 568, 369 546 C 550 640, 622 619, 593 558 C 406 540, 330 563, 470 539 C 544 630, 348 550, 503 663" rotate="auto" />
+        <g transform="scale(0.86)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.17s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.17s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.17s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.17s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#A78BFA" />
+        </g>
+      </g>
+    </g>
 </svg>
