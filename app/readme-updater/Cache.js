@@ -27,6 +27,10 @@ class Cache {
     return payload;
   }
 
+  static hasUsableData(cache) {
+    return Boolean(cache?.raw && Number(cache.raw.totalContributions) > 0);
+  }
+
   static computeDeltas(current, previous) {
     if (!previous) {
       return {};
