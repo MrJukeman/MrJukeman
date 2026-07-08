@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="680" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="540" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13">
   <title>{svg_title}</title>
   <style>{css}</style>
 
@@ -13,20 +13,17 @@
     </linearGradient>
   </defs>
 
-  <rect width="1000" height="680" class="main-box" rx="16" />
-  <rect width="1000" height="680" fill="url(#grid)" rx="16" />
+  <rect width="1000" height="540" class="main-box" rx="16" />
+  <rect width="1000" height="540" fill="url(#grid)" rx="16" />
   <rect x="1" y="1" width="998" height="88" fill="url(#header-glow)" rx="15" />
 
   {butterflies_back}
 
   {panels}
 
-  {heatmap}
-  {sparkline_section}
-
   {bottom_panels}
 
-  <text x="28" y="672" class="footer">{footer}</text>
+  <text x="28" y="528" class="footer">{footer}</text>
 
   {butterflies_front}
 </svg>
