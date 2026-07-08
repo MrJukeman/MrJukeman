@@ -10,14 +10,16 @@ on:
     paths-ignore:
       - 'dist/**'
 
+permissions:
+  contents: write
+
 jobs:
   rebuild-readme-kernel:
     runs-on: ubuntu-latest
 
     env:
-      GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-      GITHUB_USERNAME: ${{ secrets.USERNAME }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}
+      GITHUB_USERNAME: ${{ secrets.USERNAME || secrets.GITHUB_USERNAME || github.repository_owner }}
 
     steps:
       - name: Checkout code
@@ -45,7 +47,7 @@ jobs:
 
           if ! git diff --cached --quiet; then
             git commit -m "🤖 AryaOS: auto-sync README kernel [skip ci]"
-            git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }}
+            git remote set-url origin https://x-access-token:${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}@github.com/${{ github.repository }}
             git push origin main
           else
             echo "✅ Kernel already up to date."
