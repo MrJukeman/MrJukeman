@@ -7,6 +7,30 @@ import { formatNumber } from '../../../helpers/functions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withRetry(task, label, attempts = 5) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await task();
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) {
+        break;
+      }
+      const delayMs = 2 ** attempt * 1000;
+      console.warn(`${label} failed — retry ${attempt}/${attempts} in ${delayMs}ms`);
+      await sleep(delayMs);
+    }
+  }
+
+  throw lastError;
+}
+
 class GitHubProvider {
   constructor(username, accessToken) {
     this.username = username;
@@ -14,12 +38,31 @@ class GitHubProvider {
   }
 
   async collect() {
-    const [userData, contributionsResponse, events, repoStats] = await Promise.all([
-      this.githubAPI.fetchUserData(this.username),
-      getGithubContributions({ username: this.username, token: this.githubAPI.accessToken }),
-      this.fetchRecentEvents(),
-      this.fetchRepositoryStats(),
-    ]);
+    const contributionsResponse = await withRetry(
+      () =>
+        getGithubContributions({
+          username: this.username,
+          token: this.githubAPI.accessToken,
+        }),
+      'Contributions API',
+    );
+
+    const userData = await this.githubAPI.fetchUserData(this.username);
+    const events = await this.fetchRecentEvents();
+
+    let repoStats = {
+      totalStars: 0,
+      totalCommits: 0,
+      totalAdditions: 0,
+      totalDeletions: 0,
+      repositories: [],
+    };
+
+    try {
+      repoStats = await this.fetchRepositoryStats();
+    } catch (error) {
+      console.warn('Repo stats skipped:', error.message || error);
+    }
 
     const calendar =
       contributionsResponse.data.data.user.contributionsCollection.contributionCalendar;
@@ -67,7 +110,10 @@ class GitHubProvider {
   async fetchRecentEvents() {
     const url = `https://api.github.com/users/${this.username}/events/public?per_page=4`;
     const options = {
-      headers: { Authorization: `token ${this.githubAPI.accessToken}` },
+      headers: {
+        Authorization: `Bearer ${this.githubAPI.accessToken}`,
+        Accept: 'application/vnd.github+json',
+      },
     };
 
     try {
@@ -108,9 +154,9 @@ class GitHubProvider {
 
   async fetchRepositoryStats() {
     const query = `
-      query($username: String!, $after: String) {
+      query($username: String!) {
         user(login: $username) {
-          repositories(first: 50, after: $after, isFork: false) {
+          repositories(first: 100, isFork: false) {
             nodes {
               stargazers { totalCount }
               languages(first: 8) {
@@ -119,51 +165,33 @@ class GitHubProvider {
               defaultBranchRef {
                 target {
                   ... on Commit {
-                    history(first: 10) {
-                      totalCount
-                      edges { node { additions deletions } }
-                    }
+                    history { totalCount }
                   }
                 }
               }
             }
-            pageInfo { hasNextPage endCursor }
           }
         }
       }`;
 
-    let hasNextPage = true;
-    let endCursor = null;
+    const data = await this.githubAPI.fetchGraphQL(query, { username: this.username });
+    const nodes = data.data.user.repositories.nodes;
+
     let totalStars = 0;
     let totalCommits = 0;
-    let totalAdditions = 0;
-    let totalDeletions = 0;
-    const repositories = [];
 
-    while (hasNextPage) {
-      const data = await this.githubAPI.fetchGraphQL(query, {
-        username: this.username,
-        after: endCursor,
-      });
-
-      const nodes = data.data.user.repositories.nodes;
-      repositories.push(...nodes);
-
-      for (const repo of nodes) {
-        totalStars += repo.stargazers.totalCount;
-        totalCommits += repo.defaultBranchRef?.target?.history.totalCount || 0;
-
-        for (const commit of repo.defaultBranchRef?.target?.history.edges || []) {
-          totalAdditions += commit.node.additions;
-          totalDeletions += commit.node.deletions;
-        }
-      }
-
-      hasNextPage = data.data.user.repositories.pageInfo.hasNextPage;
-      endCursor = data.data.user.repositories.pageInfo.endCursor;
+    for (const repo of nodes) {
+      totalStars += repo.stargazers.totalCount;
+      totalCommits += repo.defaultBranchRef?.target?.history.totalCount || 0;
     }
 
-    return { totalStars, totalCommits, totalAdditions, totalDeletions, repositories };
+    return {
+      totalStars,
+      totalCommits,
+      totalAdditions: 0,
+      totalDeletions: 0,
+      repositories: nodes,
+    };
   }
 
   aggregateLanguages(repositories) {
@@ -232,13 +260,13 @@ class GitHubProvider {
 
   getLatestCommitHash() {
     try {
-      const headPath = path.join(__dirname, '../../.git/HEAD');
+      const headPath = path.join(__dirname, '../../../.git/HEAD');
       if (!fs.existsSync(headPath)) {
         return 'local';
       }
       let ref = fs.readFileSync(headPath, 'utf8').trim();
       if (ref.startsWith('ref: ')) {
-        ref = fs.readFileSync(path.join(__dirname, '../../.git', ref.slice(5)), 'utf8').trim();
+        ref = fs.readFileSync(path.join(__dirname, '../../../.git', ref.slice(5)), 'utf8').trim();
       }
       return ref.slice(0, 7);
     } catch {
