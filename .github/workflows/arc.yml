@@ -50,6 +50,7 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "🤖 AryaOS: auto-sync README kernel [skip ci]"
             git remote set-url origin https://x-access-token:${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}@github.com/${{ github.repository }}
+            git pull --rebase origin main
             git push origin main
           else
             echo "✅ Kernel already up to date."
