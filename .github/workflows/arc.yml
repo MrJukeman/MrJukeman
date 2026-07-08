@@ -2,12 +2,13 @@ name: AryaOS README Kernel
 
 on:
   schedule:
-    - cron: '0 * * * *'
-    - cron: '15 20 * * *'
+    - cron: '15 20 * * *'  # Daily at 2:00 AM NPT (UTC 20:15)
   workflow_dispatch:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'dist/**'
 
 jobs:
   rebuild-readme-kernel:
@@ -43,7 +44,7 @@ jobs:
           git add dist/
 
           if ! git diff --cached --quiet; then
-            git commit -m "🤖 AryaOS: auto-sync README kernel"
+            git commit -m "🤖 AryaOS: auto-sync README kernel [skip ci]"
             git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }}
             git push origin main
           else
