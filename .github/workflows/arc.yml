@@ -20,6 +20,8 @@ jobs:
     env:
       GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}
       GITHUB_USERNAME: ${{ secrets.USERNAME || secrets.GITHUB_USERNAME || github.repository_owner }}
+      STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+      STEAM_VANITY_URL: ${{ secrets.STEAM_VANITY_URL || 'MrJukeman' }}
 
     steps:
       - name: Checkout code
