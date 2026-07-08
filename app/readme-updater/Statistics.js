@@ -29,9 +29,10 @@ class Statistics {
         steam: {
           topGames: steam.topGames,
           perfectGames: steam.perfectGames,
-          perfectGamesAll: steam.perfectGamesAll ?? [],
-          perfectTotal: steam.perfectTotal ?? 0,
-          lastPerfectScan: steam.lastPerfectScan ?? null,
+        perfectGamesAll: steam.perfectGamesAll ?? [],
+        perfectTotal: steam.perfectTotal ?? 0,
+        lastPerfectScan: steam.lastPerfectScan ?? null,
+        perfectScanVersion: steam.perfectScanVersion ?? 1,
           status: steam.status,
           profileUrl: steam.profileUrl,
         },
