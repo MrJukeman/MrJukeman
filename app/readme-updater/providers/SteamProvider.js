@@ -4,7 +4,7 @@ import ConfigLoader from '../ConfigLoader.js';
 
 const API_BASE = 'https://api.steampowered.com';
 const PERFECT_SCAN_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
-const PERFECT_SCAN_VERSION = 3;
+const PERFECT_SCAN_VERSION = 4;
 const ACHIEVEMENT_CONCURRENCY = 4;
 const ACHIEVEMENT_CHECK_DELAY_MS = 120;
 
@@ -242,6 +242,8 @@ class SteamProvider {
           appId: game.appid,
           name: game.name,
           hours: formatPlaytime(game.playtime_forever),
+          achievementsUnlocked: status.unlocked,
+          achievementsTotal: status.total,
         });
       }
     });

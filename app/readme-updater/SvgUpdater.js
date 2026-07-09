@@ -227,7 +227,7 @@ class SvgUpdater {
         <tspan x="${g.padX}">#</tspan>
         <tspan x="${g.padX + 28}">TITLE</tspan>
         <tspan x="${g.hoursX}">HRS</tspan>
-        <tspan x="${g.barX}">ACTIVITY</tspan>
+        <tspan x="${g.barX}">ACHIEVEMENTS</tspan>
       </text>
     `;
 
@@ -297,8 +297,11 @@ class SvgUpdater {
       if (index > 0) {
         inner += '<tspan class="muted" dx="8">·</tspan>';
       }
-      const name = this.truncate(game.name, 22);
-      inner += `<tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">${this.escapeXml(name)}</tspan><tspan class="game-trophy-perfect" dx="4">perfect</tspan>`;
+      const total = game.achievementsTotal ?? 0;
+      const unlocked = game.achievementsUnlocked ?? total;
+      const name = this.truncate(game.name, total > 0 ? 18 : 22);
+      const perfectLabel = total > 0 ? `${unlocked}/${total} Perfect` : 'Perfect';
+      inner += `<tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">${this.escapeXml(name)}</tspan><tspan class="game-trophy-perfect" dx="4">${perfectLabel}</tspan>`;
     });
 
     return `<text x="${x}" y="${y}" class="gaming-trophy">${inner}</text>`;
@@ -306,7 +309,7 @@ class SvgUpdater {
 
   static renderBootStatus(stats) {
     const today = new Date();
-    const isBirthday = today.getMonth() === 5 && today.getDate() === 13;
+    const isBirthday = today.getMonth() === 4 && today.getDate() === 12;
     const birthday = isBirthday ? ' · birthday kernel unlocked' : '';
     return `boot ▸ aryaos ${stats.kernelVersion} ▸ github mounted ▸ telemetry live${birthday}`;
   }
