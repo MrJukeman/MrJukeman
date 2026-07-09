@@ -60,6 +60,7 @@ class SteamProvider {
     this.profileUrl =
       config.steam?.profileUrl || `https://steamcommunity.com/id/${this.vanityUrl}/games/?tab=perfect`;
     this.topCount = config.steam?.topCount ?? 4;
+    this.displayCount = config.steam?.displayCount ?? 3;
     this.perfectCount = config.steam?.perfectCount ?? 4;
     this.extraPerfectAppIds = config.steam?.extraPerfectAppIds ?? [];
   }
@@ -79,14 +80,22 @@ class SteamProvider {
       const topGames = this.pickTopGames(ownedGames);
       const perfectScan = await this.resolvePerfectGames(steamId, ownedGames);
       const perfectGames = perfectScan.games;
+      const perfectIds = new Set(perfectGames.map((game) => game.appId));
+      const dockGames = await this.buildDockGames(steamId, ownedGames, perfectIds);
+      const totalPlaytimeMinutes = ownedGames.reduce(
+        (sum, game) => sum + (game.playtime_forever || 0),
+        0,
+      );
 
       return {
         status: 'online',
         profileUrl: this.profileUrl,
         topGames,
+        dockGames,
         perfectGames: perfectGames.slice(0, this.perfectCount),
         perfectTotal: perfectGames.length,
         perfectGamesAll: perfectGames,
+        totalPlaytimeHours: formatPlaytime(totalPlaytimeMinutes),
         lastPerfectScan: perfectScan.lastPerfectScan,
         perfectScanVersion: perfectScan.perfectScanVersion,
       };
@@ -105,6 +114,7 @@ class SteamProvider {
       status: 'offline',
       profileUrl: this.profileUrl,
       topGames: [],
+      dockGames: [],
       perfectGames: [],
       perfectTotal: 0,
       message,
@@ -171,6 +181,34 @@ class SteamProvider {
         hours: formatPlaytime(game.playtime_forever),
         minutes: game.playtime_forever,
       }));
+  }
+
+  async buildDockGames(steamId, ownedGames, perfectIds) {
+    const candidates = [...ownedGames]
+      .filter((game) => game.playtime_forever > 0 && !perfectIds.has(game.appid))
+      .sort((a, b) => b.playtime_forever - a.playtime_forever)
+      .slice(0, this.displayCount);
+
+    const dockGames = [];
+
+    for (const game of candidates) {
+      await sleep(ACHIEVEMENT_CHECK_DELAY_MS);
+      const status = await this.getAchievementStatus(steamId, game.appid);
+      const total = status.total || 0;
+      const unlocked = status.unlocked || 0;
+
+      dockGames.push({
+        appId: game.appid,
+        name: game.name,
+        hours: formatPlaytime(game.playtime_forever),
+        minutes: game.playtime_forever,
+        achievementsUnlocked: unlocked,
+        achievementsTotal: total,
+        achievementPercent: total > 0 ? Math.round((unlocked / total) * 100) : 0,
+      });
+    }
+
+    return dockGames;
   }
 
   async resolvePerfectGames(steamId, games) {

@@ -8,16 +8,27 @@ const L = {
   x2: 510,
   colW: 462,
   col3a: 28,
-  col3b: 348,
-  col3c: 668,
   col3w: 300,
-  col3wLast: 304,
+  gaming: {
+    x: 348,
+    w: 624,
+    padX: 372,
+    rightX: 948,
+    barX: 760,
+    barW: 188,
+    hoursX: 700,
+    headerY: 388,
+    dividerY: 397,
+    colsY: 410,
+    rowStartY: 426,
+    rowStep: 18,
+    trophyDividerY: 478,
+    trophyY: 490,
+  },
   left: { keyX: 56, valX: 172, maxChars: 46 },
   right: { keyX: 538, valX: 662, maxChars: 38 },
   signal: { k1: 538, v1: 662, k2: 772, v2: 852 },
   process: { pidX: 56, loadX: 128, nameX: 196 },
-  steamTop: { hrsX: 364, nameX: 430 },
-  steamPerfect: { x: 684 },
 };
 
 const THEME_ACCENTS = {
@@ -167,13 +178,12 @@ class SvgUpdater {
   }
 
   static renderBottomPanels(config, stats) {
+    const { x, w } = L.gaming;
     return `
       ${this.panel(L.col3a, 368, L.col3w, 132)}
-      ${this.panel(L.col3b, 368, L.col3w, 132)}
-      ${this.panel(L.col3c, 368, L.col3wLast, 132)}
+      ${this.panel(x, 368, w, 132)}
       ${this.renderProcessPanel(stats.languages)}
-      ${this.renderSteamTopPanel(stats.steam)}
-      ${this.renderSteamPerfectPanel(stats.steam)}
+      ${this.renderGamingPanel(stats.steam, config)}
     `;
   }
 
@@ -196,65 +206,102 @@ class SvgUpdater {
     return header + rows;
   }
 
-  static renderSteamTopPanel(steam = {}) {
-    const { hrsX, nameX } = L.steamTop;
+  static renderGamingPanel(steam = {}, config = {}) {
+    const g = L.gaming;
+    const barTrackW = 148;
     const profileUrl = steam.profileUrl || 'https://steamcommunity.com/id/MrJukeman';
+    const title = config.steam?.panelTitle || 'GAMING.DOCK';
+    const perfectTotal = steam.perfectTotal ?? steam.perfectGames?.length ?? 0;
+    const totalHours = steam.totalPlaytimeHours || null;
+    const statsLine = totalHours
+      ? `${totalHours}h logged · ${perfectTotal} perfect`
+      : `${perfectTotal} perfect games`;
+
     const header = `
       <a href="${profileUrl}">
-        <text x="${hrsX}" y="390" class="section-label link">◈ STEAM.TOP</text>
+        <text x="${g.padX}" y="${g.headerY}" class="section-label link">◈ ${title}</text>
       </a>
-      <text y="408" class="muted">
-        <tspan x="${hrsX}">HRS</tspan>
-        <tspan x="${nameX}">TITLE</tspan>
+      <text x="${g.rightX}" y="${g.headerY}" text-anchor="end" class="gaming-stats">${statsLine}</text>
+      <line x1="${g.padX}" y1="${g.dividerY}" x2="${g.rightX}" y2="${g.dividerY}" class="gaming-divider" />
+      <text y="${g.colsY}" class="muted">
+        <tspan x="${g.padX}">#</tspan>
+        <tspan x="${g.padX + 28}">TITLE</tspan>
+        <tspan x="${g.hoursX}">HRS</tspan>
+        <tspan x="${g.barX}">ACTIVITY</tspan>
       </text>
     `;
 
-    if (!steam.topGames?.length) {
+    const games = this.resolveDockGames(steam).slice(0, config.steam?.displayCount ?? 3);
+
+    if (!games.length) {
       const hint =
         steam.status === 'offline' || steam.status === 'cached'
           ? steam.message || 'add STEAM_API_KEY secret'
-          : 'no playtime data';
-      return `${header}<text x="${hrsX}" y="430" class="dmesg">${this.escapeXml(hint)}</text>`;
+          : 'no in-progress games to show';
+      return header + `<text x="${g.padX}" y="${g.rowStartY + 8}" class="dmesg">${this.escapeXml(hint)}</text>`;
     }
 
-    const rows = steam.topGames
-      .map((game, i) => {
-        const y = 426 + i * 20;
-        const title = this.truncate(game.name, 24);
-        return `<text y="${y}" class="mono"><tspan x="${hrsX}" class="valueColor">${game.hours}</tspan><tspan x="${nameX}">${this.escapeXml(title)}</tspan></text>`;
+    const rows = games
+      .map((game, index) => {
+        const rowY = g.rowStartY + index * g.rowStep;
+        const barY = rowY - 8;
+        const rank = String(index + 1).padStart(2, '0');
+        const titleText = this.truncate(game.name, 32);
+        const unlocked = game.achievementsUnlocked ?? 0;
+        const total = game.achievementsTotal ?? 0;
+        const hasAchievements = total > 0;
+        const barPercent = hasAchievements ? Math.max(4, Math.round((unlocked / total) * 100)) : 0;
+        const barWidth = hasAchievements ? Math.round((barTrackW * barPercent) / 100) : 0;
+        const countLabel = hasAchievements ? `${unlocked}/${total}` : '—';
+        const barFill = hasAchievements
+          ? `<rect x="${g.barX}" y="${barY}" width="${barWidth}" height="5" rx="2" class="game-bar-fill" />`
+          : '';
+
+        return `
+          <text y="${rowY}" class="gaming-row">
+            <tspan x="${g.padX}" class="game-rank">${rank}</tspan>
+            <tspan x="${g.padX + 28}" class="game-title">${this.escapeXml(titleText)}</tspan>
+            <tspan x="${g.hoursX}" class="game-hours">${game.hours}h</tspan>
+          </text>
+          <rect x="${g.barX}" y="${barY}" width="${barTrackW}" height="5" rx="2" class="game-bar-bg" />
+          ${barFill}
+          <text x="${g.barX + barTrackW + 6}" y="${rowY}" class="game-ach-count">${countLabel}</text>
+        `;
       })
       .join('');
 
-    return header + rows;
+    const trophyLine = this.renderTrophyLine(steam.perfectGames || [], g.padX, g.trophyY);
+    const footer = trophyLine
+      ? `<line x1="${g.padX}" y1="${g.trophyDividerY}" x2="${g.rightX}" y2="${g.trophyDividerY}" class="gaming-divider" />${trophyLine}`
+      : '';
+
+    return header + rows + footer;
   }
 
-  static renderSteamPerfectPanel(steam = {}) {
-    const x = L.steamPerfect.x;
-    const profileUrl = steam.profileUrl || 'https://steamcommunity.com/id/MrJukeman/games/?tab=perfect';
-    const total = steam.perfectTotal ?? steam.perfectGames?.length ?? 0;
-    const header = `
-      <a href="${profileUrl}">
-        <text x="${x}" y="390" class="section-label link">◈ STEAM.PERFECT</text>
-      </a>
-      <text x="${x}" y="408" class="muted">${total} games · 100% achievements</text>
-    `;
-
-    if (!steam.perfectGames?.length) {
-      const hint =
-        steam.status === 'offline' || steam.status === 'cached'
-          ? steam.message || 'add STEAM_API_KEY secret'
-          : 'scanning library for 100% games…';
-      return `${header}<text x="${x}" y="430" class="dmesg">${this.escapeXml(hint)}</text>`;
+  static resolveDockGames(steam) {
+    if (steam.dockGames?.length) {
+      return steam.dockGames;
     }
 
-    const rows = steam.perfectGames
-      .map((game, i) => {
-        const title = this.truncate(game.name, 26);
-        return `<text x="${x}" y="${426 + i * 20}" class="mono"><tspan class="addColor">✓</tspan><tspan dx="8">${this.escapeXml(title)}</tspan></text>`;
-      })
-      .join('');
+    const perfectIds = new Set((steam.perfectGames || []).map((game) => game.appId));
+    return (steam.topGames || []).filter((game) => !perfectIds.has(game.appId));
+  }
 
-    return header + rows;
+  static renderTrophyLine(perfectGames, x, y) {
+    if (!perfectGames.length) {
+      return '';
+    }
+
+    let inner = '<tspan class="game-trophy-label">TROPHY CASE</tspan><tspan class="muted" dx="10">·</tspan>';
+    perfectGames.forEach((game, index) => {
+      if (index > 0) {
+        inner += '<tspan class="muted" dx="8">·</tspan>';
+      }
+      const name = this.truncate(game.name, 22);
+      inner += `<tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">${this.escapeXml(name)}</tspan><tspan class="game-trophy-perfect" dx="4">perfect</tspan>`;
+    });
+
+    return `<text x="${x}" y="${y}" class="gaming-trophy">${inner}</text>`;
   }
 
   static renderBootStatus(stats) {
