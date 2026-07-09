@@ -59,6 +59,7 @@ function buildStatsFromCache(cache, username) {
     steam: cache.steam ?? {
       status: 'cached',
       topGames: [],
+      dockGames: [],
       perfectGames: [],
       perfectTotal: 0,
       message: 'add STEAM_API_KEY secret',
@@ -96,6 +97,7 @@ function buildOfflineStats(username) {
     steam: {
       status: 'offline',
       topGames: [],
+      dockGames: [],
       perfectGames: [],
       perfectTotal: 0,
       message: 'set STEAM_API_KEY',
