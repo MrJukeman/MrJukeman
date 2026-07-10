@@ -212,7 +212,7 @@ class SvgUpdater {
       ${this.kvRow(firstRowY, 'Platform', config.profile.os)}
       ${this.kvRow(firstRowY + PAD.rowStep, 'Role', config.profile.kernel)}
       ${this.kvRow(firstRowY + 2 * PAD.rowStep, 'Crew', config.profile.hosts)}
-      ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Runtime.Age', age)}
+      ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Age', age)}
     `;
   }
 
