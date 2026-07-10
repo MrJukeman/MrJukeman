@@ -80,7 +80,16 @@ class GitHubProvider {
     }
 
     const languages = this.aggregateLanguages(this.filterLanguageRepos(languageRepos));
+
+    let locStats = { totalAdditions: 0, totalDeletions: 0 };
+    try {
+      locStats = await this.fetchLocStats();
+    } catch (error) {
+      console.warn('LOC stats skipped:', error.message || error);
+    }
+
     const commitHash = this.getLatestCommitHash();
+    const totalLinesChanged = locStats.totalAdditions + locStats.totalDeletions;
 
     return {
       totalRepos: formatNumber(public_repos + owned_private_repos),
@@ -88,9 +97,9 @@ class GitHubProvider {
       followers: formatNumber(followers),
       totalStars: formatNumber(repoStats.totalStars),
       totalCommits: formatNumber(repoStats.totalCommits),
-      totalAdditions: formatNumber(repoStats.totalAdditions),
-      totalDeletions: formatNumber(repoStats.totalDeletions),
-      totalLinesChanged: formatNumber(repoStats.totalAdditions + repoStats.totalDeletions),
+      totalAdditions: formatNumber(locStats.totalAdditions),
+      totalDeletions: formatNumber(locStats.totalDeletions),
+      totalLinesChanged: formatNumber(totalLinesChanged),
       currentStreak: streaks.current,
       longestStreak: streaks.longest,
       velocityPercent: velocity.percent,
@@ -107,9 +116,9 @@ class GitHubProvider {
         followers,
         totalStars: repoStats.totalStars,
         totalCommits: repoStats.totalCommits,
-        totalAdditions: repoStats.totalAdditions,
-        totalDeletions: repoStats.totalDeletions,
-        totalLinesChanged: repoStats.totalAdditions + repoStats.totalDeletions,
+        totalAdditions: locStats.totalAdditions,
+        totalDeletions: locStats.totalDeletions,
+        totalLinesChanged,
         currentStreak: streaks.current,
         longestStreak: streaks.longest,
       },
@@ -311,6 +320,69 @@ class GitHubProvider {
     }
 
     return enriched;
+  }
+
+  sumContributorWeeks(contributors) {
+    const login = this.username.toLowerCase();
+    const entry = contributors.find((row) => row.author?.login?.toLowerCase() === login);
+
+    if (!entry) {
+      return { additions: 0, deletions: 0 };
+    }
+
+    let additions = 0;
+    let deletions = 0;
+
+    for (const week of entry.weeks || []) {
+      additions += week.a || 0;
+      deletions += week.d || 0;
+    }
+
+    return { additions, deletions };
+  }
+
+  mapRestRepoForFilter(repo) {
+    return {
+      name: repo.name,
+      fork: repo.fork,
+      owner: {
+        login: repo.owner?.login ?? '',
+        __typename: repo.owner?.type === 'Organization' ? 'Organization' : 'User',
+      },
+    };
+  }
+
+  async fetchLocStats() {
+    const accessible = await this.fetchAllAccessibleReposREST();
+    const repos = this.filterLanguageRepos(
+      accessible.filter((repo) => !repo.fork).map((repo) => this.mapRestRepoForFilter(repo)),
+    );
+
+    let totalAdditions = 0;
+    let totalDeletions = 0;
+    const chunkSize = 5;
+
+    for (let i = 0; i < repos.length; i += chunkSize) {
+      const chunk = repos.slice(i, i + chunkSize);
+      const results = await Promise.all(
+        chunk.map(async (repo) => {
+          try {
+            const contributors = await this.githubAPI.fetchContributorStats(repo.owner.login, repo.name);
+            return this.sumContributorWeeks(contributors);
+          } catch (error) {
+            console.warn(`LOC stats skipped for ${repo.owner.login}/${repo.name}:`, error.message || error);
+            return { additions: 0, deletions: 0 };
+          }
+        }),
+      );
+
+      for (const stats of results) {
+        totalAdditions += stats.additions;
+        totalDeletions += stats.deletions;
+      }
+    }
+
+    return { totalAdditions, totalDeletions };
   }
 
   filterLanguageRepos(repositories) {

@@ -72,6 +72,46 @@ class GitHubAPI {
 
     throw lastError;
   }
+
+  async fetchContributorStats(owner, repo) {
+    const url = `https://api.github.com/repos/${owner}/${repo}/stats/contributors`;
+    const options = {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        Accept: 'application/vnd.github+json',
+      },
+    };
+
+    for (let attempt = 1; attempt <= 12; attempt += 1) {
+      const response = await fetch(url, options);
+
+      if (response.status === 202) {
+        const delayMs = Math.min(attempt * 2000, 12000);
+        console.warn(`Contributor stats computing for ${owner}/${repo} — retry in ${delayMs}ms`);
+        await sleep(delayMs);
+        continue;
+      }
+
+      if (response.status === 404 || response.status === 204) {
+        return [];
+      }
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`GitHub contributor stats ${response.status} for ${owner}/${repo}: ${body.slice(0, 120)}`);
+      }
+
+      const body = await response.text();
+      if (!body.trim()) {
+        return [];
+      }
+
+      return JSON.parse(body);
+    }
+
+    console.warn(`Contributor stats timed out for ${owner}/${repo}`);
+    return [];
+  }
 }
 
 export default GitHubAPI;
