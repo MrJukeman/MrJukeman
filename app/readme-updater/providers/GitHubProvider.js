@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { getGithubContributions } from 'github-contributions-counter';
 import GitHubAPI from '../GitHubAPI.js';
+import ConfigLoader from '../ConfigLoader.js';
 import { formatNumber } from '../../../helpers/functions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -70,7 +71,15 @@ class GitHubProvider {
 
     const streaks = this.computeStreaks(calendar.weeks);
     const velocity = this.computeVelocity(calendar.weeks);
-    const languages = this.aggregateLanguages(repoStats.repositories);
+
+    let languageRepos = repoStats.repositories;
+    try {
+      languageRepos = await this.fetchRepositoriesForLanguages();
+    } catch (error) {
+      console.warn('Full language repo scan failed, using partial set:', error.message || error);
+    }
+
+    const languages = this.aggregateLanguages(this.filterLanguageRepos(languageRepos));
     const commitHash = this.getLatestCommitHash();
 
     return {
@@ -153,29 +162,7 @@ class GitHubProvider {
   }
 
   async fetchRepositoryStats() {
-    const query = `
-      query($username: String!) {
-        user(login: $username) {
-          repositories(first: 100, isFork: false) {
-            nodes {
-              stargazers { totalCount }
-              languages(first: 8) {
-                edges { size node { name } }
-              }
-              defaultBranchRef {
-                target {
-                  ... on Commit {
-                    history { totalCount }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }`;
-
-    const data = await this.githubAPI.fetchGraphQL(query, { username: this.username });
-    const nodes = data.data.user.repositories.nodes;
+    const nodes = await this.fetchAllRepositories();
 
     let totalStars = 0;
     let totalCommits = 0;
@@ -194,6 +181,163 @@ class GitHubProvider {
     };
   }
 
+  async fetchAllRepositories() {
+    const nodes = [];
+    let cursor = null;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const query = `
+        query($username: String!, $cursor: String) {
+          user(login: $username) {
+            repositories(
+              first: 100,
+              after: $cursor,
+              isFork: false,
+              ownerAffiliations: [OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
+            ) {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              nodes {
+                name
+                isPrivate
+                owner {
+                  login
+                  __typename
+                }
+                stargazers { totalCount }
+                languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
+                  edges { size node { name } }
+                }
+                defaultBranchRef {
+                  target {
+                    ... on Commit {
+                      history { totalCount }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`;
+
+      const data = await this.githubAPI.fetchGraphQL(query, {
+        username: this.username,
+        cursor,
+      });
+      const connection = data.data.user.repositories;
+
+      nodes.push(...connection.nodes);
+      hasNextPage = connection.pageInfo.hasNextPage;
+      cursor = connection.pageInfo.endCursor;
+    }
+
+    return nodes;
+  }
+
+  restHeaders() {
+    return {
+      Authorization: `Bearer ${this.githubAPI.accessToken}`,
+      Accept: 'application/vnd.github+json',
+    };
+  }
+
+  async fetchAllAccessibleReposREST() {
+    const repos = [];
+    let page = 1;
+
+    while (true) {
+      const url =
+        `https://api.github.com/user/repos?per_page=100&page=${page}` +
+        '&affiliation=owner,organization_member,collaborator&sort=updated';
+      const batch = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders() });
+
+      if (!Array.isArray(batch) || batch.length === 0) {
+        break;
+      }
+
+      repos.push(...batch);
+
+      if (batch.length < 100) {
+        break;
+      }
+
+      page += 1;
+    }
+
+    return repos;
+  }
+
+  async fetchRepoLanguagesREST(owner, name) {
+    const url = `https://api.github.com/repos/${owner}/${name}/languages`;
+    return this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders() });
+  }
+
+  async enrichRepoWithLanguages(repo) {
+    const owner = repo.owner?.login ?? '';
+    const ownerType = repo.owner?.type === 'Organization' ? 'Organization' : 'User';
+    let edges = [];
+
+    try {
+      const languages = await this.fetchRepoLanguagesREST(owner, repo.name);
+      edges = Object.entries(languages).map(([langName, size]) => ({
+        size,
+        node: { name: langName },
+      }));
+    } catch {
+      edges = [];
+    }
+
+    return {
+      name: repo.name,
+      isPrivate: repo.private,
+      owner: { login: owner, __typename: ownerType },
+      languages: { edges },
+    };
+  }
+
+  async fetchRepositoriesForLanguages() {
+    const accessible = await this.fetchAllAccessibleReposREST();
+    const nonFork = accessible.filter((repo) => !repo.fork);
+    const enriched = [];
+    const chunkSize = 10;
+
+    for (let i = 0; i < nonFork.length; i += chunkSize) {
+      const chunk = nonFork.slice(i, i + chunkSize);
+      const results = await Promise.all(chunk.map((repo) => this.enrichRepoWithLanguages(repo)));
+      enriched.push(...results);
+    }
+
+    return enriched;
+  }
+
+  filterLanguageRepos(repositories) {
+    const config = ConfigLoader.load();
+    const processConfig = config.process ?? {};
+    const ownerOnly = processConfig.ownerOnly !== false;
+    const exclude = new Set(
+      (processConfig.excludeRepos ?? []).map((repo) => repo.trim().toLowerCase()).filter(Boolean),
+    );
+    const username = this.username.toLowerCase();
+
+    return repositories.filter((repo) => {
+      const repoName = (repo.name || '').toLowerCase();
+      if (exclude.has(repoName)) {
+        return false;
+      }
+
+      if (!ownerOnly) {
+        return true;
+      }
+
+      const ownerLogin = repo.owner?.login?.toLowerCase() ?? '';
+      const ownerType = repo.owner?.__typename ?? '';
+      return ownerType === 'User' && ownerLogin === username;
+    });
+  }
+
   aggregateLanguages(repositories) {
     const totals = {};
 
@@ -206,7 +350,7 @@ class GitHubProvider {
 
     const sorted = Object.entries(totals)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+      .slice(0, 4);
 
     const max = sorted[0]?.[1] || 1;
     return sorted.map(([name, size], index) => ({
