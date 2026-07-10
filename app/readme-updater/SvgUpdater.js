@@ -3,12 +3,32 @@ import ConfigLoader from './ConfigLoader.js';
 import ButterflyRenderer from './renderers/ButterflyRenderer.js';
 import { formatDelta, getAge, getNptTimestamp } from '../../helpers/functions.js';
 
+const PAD = {
+  top: 22,
+  bottom: 14,
+  labelToRow: 24,
+  rowStep: 22,
+  subLabelGap: 14,
+  subToRow: 16,
+  compactRowStep: 16,
+  gamingHeaderGap: 10,
+  gamingColsGap: 13,
+  gamingRowStep: 17,
+  gamingSectionGap: 13,
+};
+
 const L = {
   x1: 28,
   x2: 510,
   colW: 462,
   col3a: 28,
   col3w: 300,
+  topRowY: 100,
+  topRowH: PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom,
+  midRowY: 100 + PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom + 8,
+  midRowH: PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom,
+  bottomRowY: 368,
+  bottomRowH: 132,
   gaming: {
     x: 348,
     w: 624,
@@ -17,18 +37,57 @@ const L = {
     barX: 760,
     barW: 188,
     hoursX: 700,
-    headerY: 388,
-    dividerY: 397,
-    colsY: 410,
-    rowStartY: 426,
-    rowStep: 18,
-    trophyDividerY: 478,
-    trophyY: 490,
+    get headerY() {
+      return L.bottomRowY + PAD.top;
+    },
+    get dividerY() {
+      return this.headerY + PAD.gamingHeaderGap;
+    },
+    get colsY() {
+      return this.dividerY + PAD.gamingColsGap;
+    },
+    get rowStartY() {
+      return this.colsY + PAD.subToRow;
+    },
+    rowStep: PAD.gamingRowStep,
+    get trophyY() {
+      return L.bottomRowY + L.bottomRowH - PAD.bottom;
+    },
+    get trophyDividerY() {
+      return this.trophyY - PAD.gamingSectionGap;
+    },
   },
   left: { keyX: 56, valX: 172, maxChars: 46 },
   right: { keyX: 538, valX: 662, maxChars: 38 },
   signal: { k1: 538, v1: 662, k2: 772, v2: 852 },
-  process: { pidX: 56, loadX: 128, nameX: 196 },
+  process: {
+    padX: 56,
+    pidX: 56,
+    loadX: 112,
+    nameX: 180,
+    get rightX() {
+      return L.col3a + L.col3w - 24;
+    },
+    get headerY() {
+      return L.bottomRowY + PAD.top;
+    },
+    get dividerY() {
+      return this.headerY + PAD.gamingHeaderGap;
+    },
+    get colsY() {
+      return this.dividerY + PAD.gamingColsGap;
+    },
+    get rowStartY() {
+      return this.colsY + PAD.subToRow;
+    },
+    get maxRows() {
+      return 4;
+    },
+    get rowStep() {
+      const lastRowY = L.bottomRowY + L.bottomRowH - PAD.bottom;
+      return Math.floor((lastRowY - this.rowStartY) / (this.maxRows - 1));
+    },
+  },
 };
 
 const THEME_ACCENTS = {
@@ -97,10 +156,10 @@ class SvgUpdater {
     return `
       ${this.renderHeader(config, stats, username)}
       <line x1="28" y1="94" x2="972" y2="94" class="header-divider" />
-      ${this.panel(L.x1, 100, L.colW, 118)}
-      ${this.panel(L.x2, 100, L.colW, 118)}
-      ${this.panel(L.x1, 230, L.colW, 124)}
-      ${this.panel(L.x2, 230, L.colW, 124)}
+      ${this.panel(L.x1, L.topRowY, L.colW, L.topRowH)}
+      ${this.panel(L.x2, L.topRowY, L.colW, L.topRowH)}
+      ${this.panel(L.x1, L.midRowY, L.colW, L.midRowH)}
+      ${this.panel(L.x2, L.midRowY, L.colW, L.midRowH)}
       ${this.renderIdentityPanel(config, age)}
       ${this.renderRuntimePanel(config, stats, syncTime)}
       ${this.renderArsenalPanel(config)}
@@ -139,12 +198,14 @@ class SvgUpdater {
   }
 
   static renderArsenalPanel(config) {
+    const labelY = L.midRowY + PAD.top;
+    const firstRowY = labelY + PAD.labelToRow;
     return `
-      <text x="${L.left.keyX}" y="252" class="section-label">◈ ARSENAL</text>
-      ${this.kvRow(276, 'Syntax', config.stack.core)}
-      ${this.kvRow(298, 'Speech', config.stack.human)}
-      ${this.kvRow(320, 'Systems', config.stack.framework)}
-      ${this.kvRow(342, 'Data', config.stack.database)}
+      <text x="${L.left.keyX}" y="${labelY}" class="section-label">◈ ARSENAL</text>
+      ${this.kvRow(firstRowY, 'Syntax', config.stack.core)}
+      ${this.kvRow(firstRowY + PAD.rowStep, 'Speech', config.stack.human)}
+      ${this.kvRow(firstRowY + 2 * PAD.rowStep, 'Systems', config.stack.framework)}
+      ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Data', config.stack.database)}
     `;
   }
 
@@ -155,24 +216,26 @@ class SvgUpdater {
     const trendClass =
       stats.velocityTrend === 'up' ? 'addColor' : stats.velocityTrend === 'down' ? 'delColor' : 'valueColor';
     const { k1, v1, k2, v2 } = L.signal;
+    const labelY = L.midRowY + PAD.top;
+    const firstRowY = labelY + PAD.labelToRow;
 
     return `
-      <text x="${k1}" y="252" class="section-label">◈ SIGNAL.FEED</text>
-      <text y="276" class="row">
+      <text x="${k1}" y="${labelY}" class="section-label">◈ SIGNAL.FEED</text>
+      <text y="${firstRowY}" class="row">
         <tspan x="${k1}" class="keyColor">Repos</tspan><tspan x="${v1}" class="valueColor">${stats.totalRepos}</tspan><tspan class="addColor">${delta('totalRepos')}</tspan>
         <tspan x="${k2}" class="keyColor">Stars</tspan><tspan x="${v2}" class="valueColor">${stats.totalStars}</tspan><tspan class="addColor">${delta('totalStars')}</tspan>
       </text>
-      <text y="298" class="row">
+      <text y="${firstRowY + PAD.rowStep}" class="row">
         <tspan x="${k1}" class="keyColor">Commits</tspan><tspan x="${v1}" class="valueColor">${stats.totalCommits}</tspan><tspan class="addColor">${delta('totalCommits')}</tspan>
         <tspan x="${k2}" class="keyColor">Followers</tspan><tspan x="${v2}" class="valueColor">${stats.followers}</tspan><tspan class="addColor">${delta('followers')}</tspan>
       </text>
-      <text y="320" class="row">
+      <text y="${firstRowY + 2 * PAD.rowStep}" class="row">
         <tspan x="${k1}" class="keyColor">Contrib</tspan><tspan x="${v1}" class="valueColor">${stats.totalContributions}</tspan><tspan class="addColor">${delta('totalContributions')}</tspan>
         <tspan x="${k2}" class="keyColor">Pulse</tspan><tspan x="${v2}" class="${trendClass}">${trendArrow} ${stats.velocityPercent}%</tspan>
       </text>
-      <text y="342" class="row">
+      <text y="${firstRowY + 3 * PAD.rowStep}" class="row">
         <tspan x="${k1}" class="keyColor">LOC Delta</tspan><tspan x="${v1}" class="valueColor">${stats.totalLinesChanged}</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+${stats.totalAdditions}</tspan><tspan class="dim"> / </tspan><tspan class="delColor">-${stats.totalDeletions}</tspan><tspan class="dim">)</tspan>
-        <tspan x="${k2}" class="keyColor">Streak</tspan><tspan x="${v2}" class="valueColor">${stats.currentStreak}d</tspan><tspan class="dim"> / </tspan><tspan class="valueColor">${stats.longestStreak}d</tspan>
+        <tspan x="${k2}" class="keyColor">Streak</tspan><tspan x="${v2}" class="valueColor">${stats.currentStreak ?? 0}d</tspan><tspan class="dim"> / </tspan><tspan class="valueColor">${stats.longestStreak ?? 0}d</tspan>
       </text>
     `;
   }
@@ -180,30 +243,43 @@ class SvgUpdater {
   static renderBottomPanels(config, stats) {
     const { x, w } = L.gaming;
     return `
-      ${this.panel(L.col3a, 368, L.col3w, 132)}
-      ${this.panel(x, 368, w, 132)}
-      ${this.renderProcessPanel(stats.languages)}
+      ${this.panel(L.col3a, L.bottomRowY, L.col3w, L.bottomRowH)}
+      ${this.panel(x, L.bottomRowY, w, L.bottomRowH)}
+      ${this.renderProcessPanel(stats.languages, config)}
       ${this.renderGamingPanel(stats.steam, config)}
     `;
   }
 
-  static renderProcessPanel(languages) {
-    const { pidX, loadX, nameX } = L.process;
+  static renderProcessPanel(languages, config = {}) {
+    const p = L.process;
+    const displayCount = config.process?.displayCount ?? p.maxRows;
+    const title = config.process?.panelTitle || 'PROCESS.MONITOR';
+    const rows = (languages || []).slice(0, displayCount);
+    const statsLine = `${rows.length} runtime`;
+
     const header = `
-      <text x="${pidX}" y="390" class="section-label">PROCESS.MONITOR</text>
-      <text y="408" class="muted">
-        <tspan x="${pidX}">PID</tspan>
-        <tspan x="${loadX}">LOAD</tspan>
-        <tspan x="${nameX}">RUNTIME</tspan>
+      <text x="${p.padX}" y="${p.headerY}" class="section-label">◈ ${title}</text>
+      <text x="${p.rightX}" y="${p.headerY}" text-anchor="end" class="gaming-stats">${statsLine}</text>
+      <line x1="${p.padX}" y1="${p.dividerY}" x2="${p.rightX}" y2="${p.dividerY}" class="gaming-divider" />
+      <text y="${p.colsY}" class="muted">
+        <tspan x="${p.pidX}">PID</tspan>
+        <tspan x="${p.loadX}">LOAD</tspan>
+        <tspan x="${p.nameX}">RUNTIME</tspan>
       </text>
     `;
-    const rows = languages
+
+    if (!rows.length) {
+      return header + `<text x="${p.padX}" y="${p.rowStartY + 8}" class="dmesg">no runtime telemetry</text>`;
+    }
+
+    const dataRows = rows
       .map(
         (lang, i) =>
-          `<text y="${426 + i * 18}" class="mono"><tspan x="${pidX}" class="keyColor">${lang.pid}</tspan><tspan x="${loadX}" class="valueColor">${String(lang.cpu).padStart(2)}%</tspan><tspan x="${nameX}">${lang.name}</tspan></text>`,
+          `<text y="${p.rowStartY + i * p.rowStep}" class="mono"><tspan x="${p.pidX}" class="keyColor">${lang.pid}</tspan><tspan x="${p.loadX}" class="valueColor">${String(lang.cpu).padStart(2)}%</tspan><tspan x="${p.nameX}">${lang.name}</tspan></text>`,
       )
       .join('');
-    return header + rows;
+
+    return header + dataRows;
   }
 
   static renderGamingPanel(steam = {}, config = {}) {
