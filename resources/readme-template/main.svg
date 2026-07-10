@@ -5,16 +5,23 @@
 
   <defs>
     <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
-      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,{grid_opacity})" stroke-width="1" />
     </pattern>
-    <linearGradient id="header-glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="{accent_a}" stop-opacity="0.35" />
-      <stop offset="100%" stop-color="{accent_b}" stop-opacity="0.05" />
-    </linearGradient>
+    {wallpaper_gradient}
+    <filter id="crew-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
 
   <rect width="1000" height="{svg_height}" class="main-box" rx="16" />
   <rect width="1000" height="{svg_height}" fill="url(#grid)" rx="16" />
+  {wallpaper_overlay}
+
+  {butterfly_trails}
 
   {butterflies_back}
 
