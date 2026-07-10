@@ -46,7 +46,9 @@ function writeSyncMetadata() {
     process.exit(1);
   }
 
-  SvgUpdater.updateSVG(stats, username);
+  SvgUpdater.updateSVG(stats, username, {
+    newAchievement: stats.newAchievement,
+  });
   writeSyncMetadata();
   console.log(`AryaOS SVG kernel rebuilt successfully for @${username}.`);
 })();

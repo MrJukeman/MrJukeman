@@ -57,10 +57,6 @@ const LANGUAGE_DISPLAY = {
   procfile: 'Procfile',
 };
 
-/**
- * @param {string} name
- * @returns {string}
- */
 export function formatLanguageName(name) {
   if (!name) {
     return '';
@@ -92,10 +88,6 @@ export function formatLanguageName(name) {
     .join('');
 }
 
-/**
- * @param {number} num
- * @returns {string}
- */
 export function formatNumber(num) {
   if (num >= 1e12) {
     return (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
@@ -112,10 +104,6 @@ export function formatNumber(num) {
   return num.toString();
 }
 
-/**
- * @param {number|null|undefined} delta
- * @returns {string}
- */
 export function formatDelta(delta) {
   if (delta === null || delta === undefined || delta === 0) {
     return '';
@@ -124,9 +112,6 @@ export function formatDelta(delta) {
   return ` (${sign}${formatNumber(Math.abs(delta))})`;
 }
 
-/**
- * @returns {string}
- */
 export function getNptTimestamp() {
   return new Date().toLocaleString('en-US', {
     timeZone: 'Asia/Kathmandu',
@@ -140,10 +125,6 @@ export function getNptTimestamp() {
   });
 }
 
-/**
- * @param {string} dob
- * @returns {string}
- */
 export function getAge(dob) {
   const birthDate = new Date(dob);
   const today = new Date();
