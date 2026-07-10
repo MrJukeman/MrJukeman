@@ -59,7 +59,7 @@ const L = {
   },
   left: { keyX: 56, valX: 172, maxChars: 46 },
   right: { keyX: 538, valX: 662, maxChars: 38 },
-  signal: { k1: 538, v1: 662, k2: 772, v2: 852 },
+  signal: { k1: 538, v1: 662, k2: 810, v2: 890 },
   process: {
     padX: 56,
     pidX: 56,
@@ -219,6 +219,8 @@ class SvgUpdater {
     const labelY = L.midRowY + PAD.top;
     const firstRowY = labelY + PAD.labelToRow;
 
+    const lastRowY = firstRowY + 3 * PAD.rowStep;
+
     return `
       <text x="${k1}" y="${labelY}" class="section-label">◈ SIGNAL.FEED</text>
       <text y="${firstRowY}" class="row">
@@ -233,8 +235,10 @@ class SvgUpdater {
         <tspan x="${k1}" class="keyColor">Contrib</tspan><tspan x="${v1}" class="valueColor">${stats.totalContributions}</tspan><tspan class="addColor">${delta('totalContributions')}</tspan>
         <tspan x="${k2}" class="keyColor">Pulse</tspan><tspan x="${v2}" class="${trendClass}">${trendArrow} ${stats.velocityPercent}%</tspan>
       </text>
-      <text y="${firstRowY + 3 * PAD.rowStep}" class="row">
-        <tspan x="${k1}" class="keyColor">LOC Delta</tspan><tspan x="${v1}" class="valueColor">${stats.totalLinesChanged}</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+${stats.totalAdditions}</tspan><tspan class="dim"> / </tspan><tspan class="delColor">-${stats.totalDeletions}</tspan><tspan class="dim">)</tspan>
+      <text y="${lastRowY}" class="row">
+        <tspan x="${k1}" class="keyColor">LOC Delta</tspan><tspan x="${v1}" class="valueColor">${stats.totalLinesChanged}</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+${stats.totalAdditions}</tspan><tspan class="dim">/</tspan><tspan class="delColor">-${stats.totalDeletions}</tspan><tspan class="dim">)</tspan>
+      </text>
+      <text y="${lastRowY}" class="row">
         <tspan x="${k2}" class="keyColor">Streak</tspan><tspan x="${v2}" class="valueColor">${stats.currentStreak ?? 0}d</tspan><tspan class="dim"> / </tspan><tspan class="valueColor">${stats.longestStreak ?? 0}d</tspan>
       </text>
     `;
