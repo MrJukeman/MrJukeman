@@ -1,11 +1,8 @@
 import fetch from 'node-fetch';
+import { sleep } from '../../helpers/async.js';
 
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 const MAX_ATTEMPTS = 5;
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 class GitHubAPI {
   constructor(accessToken) {

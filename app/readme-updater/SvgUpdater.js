@@ -8,9 +8,7 @@ const PAD = {
   bottom: 14,
   labelToRow: 24,
   rowStep: 22,
-  subLabelGap: 14,
   subToRow: 16,
-  compactRowStep: 16,
   gamingHeaderGap: 10,
   gamingColsGap: 13,
   gamingRowStep: 17,
@@ -101,32 +99,41 @@ class SvgUpdater {
     const syncTime = getNptTimestamp();
     const age = getAge(config.profile.dob);
     const seed = Date.now() ^ Number.parseInt(stats.commitHash.replace(/\D/g, '') || '0', 10);
+    const template = fs.readFileSync('resources/readme-template/main.svg', 'utf8');
+    const cssByTheme = Object.fromEntries(
+      config.themes.map((theme) => [
+        theme,
+        fs.readFileSync(`public/assets/css/readme/${theme}.css`, 'utf8'),
+      ]),
+    );
+    const butterflies = ButterflyRenderer.render(seed);
+    const panels = this.renderTopPanels(config, stats, age, syncTime, username);
+    const bottomPanels = this.renderBottomPanels(config, stats);
+    const footer = this.renderFooter(syncTime, stats.commitHash);
 
-    config.themes.forEach((theme) => {
-      let svgContent = fs.readFileSync('resources/readme-template/main.svg', 'utf8');
-      const cssContent = fs.readFileSync(`public/assets/css/readme/${theme}.css`, 'utf8');
+    fs.mkdirSync('dist', { recursive: true });
+
+    for (const theme of config.themes) {
       const [accentA, accentB] = THEME_ACCENTS[theme] || THEME_ACCENTS.dark;
-      const butterflies = ButterflyRenderer.render(1000, 540, seed);
-
       const replacements = {
-        '{css}': cssContent,
+        '{css}': cssByTheme[theme],
         '{svg_title}': config.svg.title,
         '{accent_a}': accentA,
         '{accent_b}': accentB,
         '{butterflies_back}': butterflies.back,
         '{butterflies_front}': butterflies.front,
-        '{panels}': this.renderTopPanels(config, stats, age, syncTime, username),
-        '{bottom_panels}': this.renderBottomPanels(config, stats),
-        '{footer}': this.renderFooter(syncTime, stats.commitHash),
+        '{panels}': panels,
+        '{bottom_panels}': bottomPanels,
+        '{footer}': footer,
       };
 
+      let svgContent = template;
       for (const [token, value] of Object.entries(replacements)) {
         svgContent = svgContent.replaceAll(token, value);
       }
 
-      fs.mkdirSync('dist', { recursive: true });
       fs.writeFileSync(`dist/${theme}.svg`, svgContent);
-    });
+    }
   }
 
   static panel(x, y, w, h) {
@@ -315,7 +322,7 @@ class SvgUpdater {
 
     if (!games.length) {
       const hint =
-        steam.status === 'offline' || steam.status === 'cached'
+        steam.status === 'offline'
           ? steam.message || 'add STEAM_API_KEY secret'
           : 'no in-progress games to show';
       return header + `<text x="${g.padX}" y="${g.rowStartY + 8}" class="dmesg">${this.escapeXml(hint)}</text>`;

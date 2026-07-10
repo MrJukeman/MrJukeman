@@ -2,7 +2,7 @@ name: AryaOS README Kernel
 
 on:
   schedule:
-    - cron: '15 20 * * *'  # Daily at 2:00 AM NPT (UTC 20:15)
+    - cron: '15 8 * * *'  # Daily at 2:00 PM NPT (UTC 08:15)
   workflow_dispatch:
   push:
     branches:
