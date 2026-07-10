@@ -275,7 +275,7 @@ class SvgUpdater {
     const dataRows = rows
       .map(
         (lang, i) =>
-          `<text y="${p.rowStartY + i * p.rowStep}" class="mono"><tspan x="${p.pidX}" class="keyColor">${lang.pid}</tspan><tspan x="${p.loadX}" class="valueColor">${String(lang.cpu).padStart(2)}%</tspan><tspan x="${p.nameX}">${lang.name}</tspan></text>`,
+          `<text y="${p.rowStartY + i * p.rowStep}" class="mono"><tspan x="${p.pidX}" class="keyColor">${lang.pid}</tspan><tspan x="${p.loadX}" class="valueColor">${String(lang.cpu).padStart(2)}%</tspan><tspan x="${p.nameX}">${this.escapeXml(lang.name)}</tspan></text>`,
       )
       .join('');
 

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { getGithubContributions } from 'github-contributions-counter';
 import GitHubAPI from '../GitHubAPI.js';
 import ConfigLoader from '../ConfigLoader.js';
-import { formatNumber } from '../../../helpers/functions.js';
+import { formatNumber, formatLanguageName } from '../../../helpers/functions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -343,8 +343,8 @@ class GitHubProvider {
 
     for (const repo of repositories) {
       for (const edge of repo.languages?.edges || []) {
-        const name = edge.node.name;
-        totals[name] = (totals[name] || 0) + edge.size;
+        const key = edge.node.name.toLowerCase();
+        totals[key] = (totals[key] || 0) + edge.size;
       }
     }
 
@@ -355,7 +355,7 @@ class GitHubProvider {
     const max = sorted[0]?.[1] || 1;
     return sorted.map(([name, size], index) => ({
       pid: 1000 + index * 111,
-      name: name.toLowerCase(),
+      name: formatLanguageName(name),
       cpu: Math.max(1, Math.round((size / max) * 99)),
     }));
   }

@@ -1,3 +1,97 @@
+const LANGUAGE_DISPLAY = {
+  c: 'C',
+  'c++': 'C++',
+  'c#': 'C#',
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
+  python: 'Python',
+  html: 'HTML',
+  css: 'CSS',
+  php: 'PHP',
+  ruby: 'Ruby',
+  rust: 'Rust',
+  go: 'Go',
+  java: 'Java',
+  kotlin: 'Kotlin',
+  swift: 'Swift',
+  dart: 'Dart',
+  vue: 'Vue',
+  scala: 'Scala',
+  haskell: 'Haskell',
+  elixir: 'Elixir',
+  erlang: 'Erlang',
+  clojure: 'Clojure',
+  lua: 'Lua',
+  r: 'R',
+  matlab: 'MATLAB',
+  mathematica: 'Mathematica',
+  fortran: 'Fortran',
+  shell: 'Shell',
+  powershell: 'PowerShell',
+  dockerfile: 'Dockerfile',
+  makefile: 'Makefile',
+  cmake: 'CMake',
+  'objective-c': 'Objective-C',
+  scss: 'SCSS',
+  sass: 'Sass',
+  less: 'Less',
+  handlebars: 'Handlebars',
+  hack: 'Hack',
+  blade: 'Blade',
+  smarty: 'Smarty',
+  meson: 'Meson',
+  roff: 'Roff',
+  just: 'Just',
+  sql: 'SQL',
+  graphql: 'GraphQL',
+  yaml: 'YAML',
+  json: 'JSON',
+  markdown: 'Markdown',
+  tex: 'TeX',
+  cuda: 'CUDA',
+  hlsl: 'HLSL',
+  glsl: 'GLSL',
+  wasm: 'WebAssembly',
+  'go template': 'Go Template',
+  'jupyter notebook': 'Jupyter Notebook',
+  procfile: 'Procfile',
+};
+
+/**
+ * @param {string} name
+ * @returns {string}
+ */
+export function formatLanguageName(name) {
+  if (!name) {
+    return '';
+  }
+
+  const trimmed = name.trim();
+  const key = trimmed.toLowerCase();
+
+  if (LANGUAGE_DISPLAY[key]) {
+    return LANGUAGE_DISPLAY[key];
+  }
+
+  if (trimmed !== key && /[A-Z]/.test(trimmed)) {
+    return trimmed;
+  }
+
+  return trimmed
+    .split(/(\s+|-)/g)
+    .map((segment) => {
+      if (!segment || /^[\s-]+$/.test(segment)) {
+        return segment;
+      }
+
+      const segmentKey = segment.toLowerCase();
+      return (
+        LANGUAGE_DISPLAY[segmentKey] ?? segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()
+      );
+    })
+    .join('');
+}
+
 /**
  * @param {number} num
  * @returns {string}
