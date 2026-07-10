@@ -1,5 +1,6 @@
 import GitHubProvider from './providers/GitHubProvider.js';
 import SteamProvider from './providers/SteamProvider.js';
+import AchievementTracker from './AchievementTracker.js';
 
 class Statistics {
   constructor(username, accessToken) {
@@ -15,7 +16,10 @@ class Statistics {
         this.steamProvider.collect(),
       ]);
 
-      return { ...stats, steam, deltas: {} };
+      const merged = { ...stats, steam };
+      const meta = AchievementTracker.process(merged, steam);
+
+      return { ...merged, deltas: meta.deltas, newAchievement: meta.newAchievement };
     } catch (error) {
       console.error('Error fetching live stats:', error.message || error);
       if (error.stack) {

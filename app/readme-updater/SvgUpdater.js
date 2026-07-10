@@ -1,7 +1,10 @@
 import fs from 'fs';
 import ConfigLoader from './ConfigLoader.js';
 import ButterflyRenderer from './renderers/ButterflyRenderer.js';
+import BootSequenceRenderer from './renderers/BootSequenceRenderer.js';
 import NavRenderer, { NAV } from './renderers/NavRenderer.js';
+import SparklineRenderer from './renderers/SparklineRenderer.js';
+import WallpaperRenderer from './renderers/WallpaperRenderer.js';
 import { formatDelta, getAge, getNptTimestamp } from '../../helpers/functions.js';
 
 const PAD = {
@@ -62,7 +65,6 @@ const L = {
     padX: 372,
     rightX: 948,
     barX: 760,
-    barW: 188,
     hoursX: 700,
     get headerY() {
       return L.bottomRowY + PAD.top;
@@ -122,12 +124,18 @@ const THEME_ACCENTS = {
   light: ['#d81e5b', '#0969da'],
 };
 
+const HEART_ROMANCE = {
+  dark: '#ff7eb6',
+  light: '#bf3989',
+};
+
 class SvgUpdater {
-  static updateSVG(stats, username) {
+  static updateSVG(stats, username, meta = {}) {
     const config = ConfigLoader.load();
     const syncTime = getNptTimestamp();
     const age = getAge(config.profile.dob);
     const seed = Date.now() ^ Number.parseInt(stats.commitHash.replace(/\D/g, '') || '0', 10);
+    const daySeed = seed ^ new Date().getDate() * 9973;
     const template = fs.readFileSync('resources/readme-template/main.svg', 'utf8');
     const cssByTheme = Object.fromEntries(
       config.themes.map((theme) => [
@@ -136,14 +144,25 @@ class SvgUpdater {
       ]),
     );
     const butterflies = ButterflyRenderer.render(seed);
-    const panels = this.renderTopPanels(config, stats, age, syncTime, username);
+    const wallpaper = WallpaperRenderer.render(daySeed);
     const bottomPanels = this.renderBottomPanels(config, stats);
-    const footer = this.renderFooter(syncTime, stats.commitHash);
+    const bootLine = BootSequenceRenderer.render(seed, {
+      username,
+      butterflyCount: butterflies.count,
+      perfectTotal: stats.steam?.perfectTotal ?? 0,
+      steamOnline: stats.steam?.status === 'online',
+      wallpaperId: wallpaper.wallpaperId,
+      legendary: butterflies.legendary,
+    });
+    const footer = this.renderFooter(syncTime, stats.commitHash, bootLine, meta.newAchievement);
 
     fs.mkdirSync('dist', { recursive: true });
 
     for (const theme of config.themes) {
       const [accentA, accentB] = THEME_ACCENTS[theme] || THEME_ACCENTS.dark;
+      const romancePink = HEART_ROMANCE[theme] || HEART_ROMANCE.dark;
+      const panels = this.renderTopPanels(config, stats, age, syncTime, username, butterflies, romancePink);
+      const trails = ButterflyRenderer.renderBeaconEffects(butterflies.showConstellation);
       const replacements = {
         '{css}': cssByTheme[theme],
         '{svg_title}': config.svg.title,
@@ -151,6 +170,10 @@ class SvgUpdater {
         '{footer_y}': String(L.footerY),
         '{accent_a}': accentA,
         '{accent_b}': accentB,
+        '{grid_opacity}': wallpaper.gridOpacity,
+        '{wallpaper_gradient}': wallpaper.gradient.replaceAll('{accent_a}', accentA).replaceAll('{accent_b}', accentB),
+        '{wallpaper_overlay}': wallpaper.overlay,
+        '{butterfly_trails}': trails,
         '{butterflies_back}': butterflies.back,
         '{butterflies_front}': butterflies.front,
         '{panels}': panels,
@@ -190,30 +213,51 @@ class SvgUpdater {
     return `<text y="${y}" class="row"><tspan x="${keyX}" class="keyColor">${key}</tspan>${valueMarkup}</text>`;
   }
 
-  static renderTopPanels(config, stats, age, syncTime, username) {
+  static renderTopPanels(config, stats, age, syncTime, username, butterflies, romancePink) {
     return `
-      ${NavRenderer.render(config, stats, username)}
+      ${NavRenderer.render(config, stats, username, {
+        aryaDuration: butterflies.aryaDuration,
+        romancePink,
+      })}
       ${this.panel(L.x1, L.topRowY, L.colW, L.topRowH)}
       ${this.panel(L.x2, L.topRowY, L.colW, L.topRowH)}
       ${this.panel(L.x1, L.midRowY, L.colW, L.midRowH)}
       ${this.panel(L.x2, L.midRowY, L.colW, L.midRowH)}
-      ${this.renderIdentityPanel(config, age)}
+      ${this.renderIdentityPanel(config, age, stats)}
       ${this.renderRuntimePanel(config, stats, syncTime)}
       ${this.renderArsenalPanel(config)}
       ${this.renderSignalPanel(stats)}
     `;
   }
 
-  static renderIdentityPanel(config, age) {
+  static renderIdentityPanel(config, age, stats) {
     const labelY = L.topLabelY;
     const firstRowY = L.topFirstRowY;
     return `
       <text x="${L.left.keyX}" y="${labelY}" class="section-label">◈ IDENTITY</text>
       ${this.kvRow(firstRowY, 'Platform', config.profile.os)}
       ${this.kvRow(firstRowY + PAD.rowStep, 'Role', config.profile.kernel)}
-      ${this.kvRow(firstRowY + 2 * PAD.rowStep, 'Crew', config.profile.hosts)}
+      ${this.renderCrewRow(firstRowY + 2 * PAD.rowStep, stats.crewMesh || [], config.profile.hosts)}
       ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Age', age)}
     `;
+  }
+
+  static renderCrewRow(y, nodes, fallbackHosts) {
+    if (!nodes.length) {
+      return this.kvRow(y, 'Crew', fallbackHosts);
+    }
+
+    return `<text y="${y}" class="row"><tspan x="${L.left.keyX}" class="keyColor">Crew</tspan>${this.renderCrewMesh(nodes)}</text>`;
+  }
+
+  static renderCrewMesh(nodes) {
+    const parts = nodes.map((node, index) => {
+      const nameClass = node.active ? 'crew-name-active' : 'crew-name-idle';
+      const prefix = index === 0 ? '' : '<tspan class="dim" dx="8">·</tspan>';
+      return `${prefix}<tspan class="${nameClass}" dx="${index === 0 ? 0 : 4}">${this.escapeXml(node.label)}</tspan>`;
+    });
+
+    return `<tspan x="${L.left.valX}">${parts.join('')}</tspan>`;
   }
 
   static renderRuntimePanel(config, stats, syncTime) {
@@ -251,6 +295,8 @@ class SvgUpdater {
     const firstRowY = labelY + PAD.labelToRow;
 
     const lastRowY = firstRowY + 3 * PAD.rowStep;
+    const sparkline = stats.contributionSparkline || [];
+    const contribSpark = SparklineRenderer.render(sparkline, 718, firstRowY + 2 * PAD.rowStep - 9);
 
     return `
       <text x="${k1}" y="${labelY}" class="section-label">◈ SIGNAL.FEED</text>
@@ -266,6 +312,7 @@ class SvgUpdater {
         <tspan x="${k1}" class="keyColor">Contrib</tspan><tspan x="${v1}" class="valueColor">${stats.totalContributions}</tspan><tspan class="addColor">${delta('totalContributions')}</tspan>
         <tspan x="${k2}" class="keyColor">Pulse</tspan><tspan x="${v2}" class="${trendClass}">${trendArrow} ${stats.velocityPercent}%</tspan>
       </text>
+      ${contribSpark}
       <text y="${lastRowY}" class="row">
         <tspan x="${k1}" class="keyColor">LOC Delta</tspan><tspan x="${v1}" class="valueColor">${stats.totalLinesChanged}</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+${stats.totalAdditions}</tspan><tspan class="dim">/</tspan><tspan class="delColor">-${stats.totalDeletions}</tspan><tspan class="dim">)</tspan>
       </text>
@@ -418,8 +465,11 @@ class SvgUpdater {
     return `<text x="${x}" y="${y}" class="gaming-trophy">${inner}</text>`;
   }
 
-  static renderFooter(syncTime, commitHash) {
-    return `build ${commitHash} · synced ${syncTime} NPT · butterflies in flight · <tspan class="cursor">█</tspan>`;
+  static renderFooter(syncTime, commitHash, bootLine, achievement = null) {
+    const achievementPart = achievement
+      ? `<tspan class="achievement-toast">achievement unlocked: ${this.escapeXml(achievement)} · </tspan>`
+      : '';
+    return `${achievementPart}build ${commitHash} · synced ${syncTime} NPT · ${bootLine} · <tspan class="cursor">█</tspan>`;
   }
 
   static escapeXml(value) {

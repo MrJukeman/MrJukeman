@@ -49,34 +49,6 @@
 .nav-romance-soft {
   fill: #d457a5;
 }
-.hero-title {
-  fill: #1f2328;
-  font-size: 22px;
-  font-weight: bold;
-  letter-spacing: 3px;
-}
-.hero-version {
-  fill: #bf3989;
-  font-size: 13px;
-  letter-spacing: 0;
-  font-weight: normal;
-}
-.hero-sub {
-  fill: #656d76;
-  font-size: 12px;
-}
-.hero-user {
-  fill: #656d76;
-  font-size: 11px;
-}
-.header-divider {
-  stroke: rgba(27, 31, 36, 0.12);
-  stroke-width: 1;
-}
-.boot-line {
-  fill: #656d76;
-  font-size: 11px;
-}
 .section-label {
   fill: #0969da;
   font-size: 11px;
@@ -120,6 +92,59 @@
 }
 .butterfly-body {
   stroke: #57606a;
+}
+.butterfly-arya {
+  opacity: 0.82;
+}
+.butterfly-arya-glow {
+  fill: #bf3989;
+  opacity: 0.12;
+}
+.butterfly-arya-body {
+  stroke: #bf3989;
+}
+.butterfly-seeker .butterfly-body {
+  stroke: rgba(191, 57, 137, 0.4);
+}
+.butterfly-legendary-body {
+  stroke: #bf8700;
+}
+.arya-tail-sparkle {
+  fill: #ffd700;
+}
+.arya-tail-star line {
+  stroke: #ffd700;
+}
+.heart-constellation .constellation-line {
+  stroke: #ff7eb6;
+  stroke-width: 0.6;
+  opacity: 0.08;
+}
+.heart-constellation .constellation-node {
+  fill: #ff7eb6;
+  opacity: 0.12;
+}
+.heart-beacon {
+  fill: #ff7eb6;
+}
+.crew-name-active {
+  fill: #2da44e;
+  font-weight: bold;
+  filter: url(#crew-glow);
+}
+.crew-name-idle {
+  fill: #656d76;
+}
+.sparkline {
+  stroke: #bf3989;
+  stroke-width: 1.2;
+  opacity: 0.85;
+}
+.sparkline-dot {
+  fill: #bf3989;
+}
+.achievement-toast {
+  fill: #bf3989;
 }
 .gaming-stats {
   fill: #656d76;

@@ -81,6 +81,10 @@ class GitHubProvider {
 
     const commitHash = this.getLatestCommitHash();
     const totalLinesChanged = locStats.totalAdditions + locStats.totalDeletions;
+    const contributionDays = calendar.weeks.flatMap((week) => week.contributionDays);
+    const contributionSparkline = contributionDays.slice(-7).map((day) => day.contributionCount);
+    const todayContributions = contributionDays.at(-1)?.contributionCount ?? 0;
+    const crewMesh = await this.fetchCrewMesh();
 
     return {
       totalRepos: formatNumber(public_repos + owned_private_repos),
@@ -98,6 +102,9 @@ class GitHubProvider {
       languages,
       kernelVersion: `6.${new Date().getFullYear()}.${calendar.totalContributions}`,
       commitHash,
+      contributionSparkline,
+      todayContributions,
+      crewMesh,
       raw: {
         totalRepos: public_repos + owned_private_repos,
         totalContributions: calendar.totalContributions,
@@ -365,6 +372,51 @@ class GitHubProvider {
     } catch {
       return 'unknown';
     }
+  }
+
+  async fetchCrewMesh() {
+    const config = ConfigLoader.load();
+    const nodes = config.crew?.nodes ?? [];
+
+    if (!nodes.length) {
+      return [];
+    }
+
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+    return mapPool(nodes, 3, async (node) => {
+      const active = await this.isCrewNodeActive(node, weekAgo);
+      return {
+        label: node.label,
+        active,
+      };
+    });
+  }
+
+  async isCrewNodeActive(node, weekAgo) {
+    if (node.org) {
+      try {
+        const url = `https://api.github.com/orgs/${node.org}/repos?per_page=5&sort=updated`;
+        const repos = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders });
+        if (Array.isArray(repos)) {
+          return repos.some((repo) => new Date(repo.pushed_at).getTime() >= weekAgo);
+        }
+      } catch {
+      }
+    }
+
+    if (node.repo) {
+      try {
+        const [owner, name] = node.repo.split('/');
+        const url = `https://api.github.com/repos/${owner}/${name}`;
+        const repo = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders });
+        return new Date(repo.pushed_at).getTime() >= weekAgo;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
   }
 }
 

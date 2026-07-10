@@ -53,7 +53,10 @@ class SteamProvider {
 
     try {
       const steamId = await this.resolveSteamId();
-      const ownedGames = await this.fetchOwnedGames(steamId);
+      const [ownedGames, presence] = await Promise.all([
+        this.fetchOwnedGames(steamId),
+        this.fetchPresence(steamId),
+      ]);
       const topGames = this.pickTopGames(ownedGames);
       const perfectGames = await this.scanPerfectGames(steamId, ownedGames);
       const perfectIds = new Set(perfectGames.map((game) => game.appId));
@@ -71,6 +74,7 @@ class SteamProvider {
         perfectGames: perfectGames.slice(0, this.perfectCount),
         perfectTotal: perfectGames.length,
         totalPlaytimeHours: formatPlaytime(totalPlaytimeMinutes),
+        presence,
       };
     } catch (error) {
       console.warn('Steam API error:', error.message || error);
@@ -86,8 +90,35 @@ class SteamProvider {
       dockGames: [],
       perfectGames: [],
       perfectTotal: 0,
+      presence: { state: 'offline', gameName: null },
       message,
     };
+  }
+
+  async fetchPresence(steamId) {
+    const data = await this.apiGet('/ISteamUser/GetPlayerSummaries/v0002/', {
+      steamids: steamId,
+    });
+
+    const player = data?.response?.players?.[0];
+    if (!player) {
+      return { state: 'offline', gameName: null };
+    }
+
+    if (player.gameextrainfo) {
+      return {
+        state: 'in-game',
+        gameName: player.gameextrainfo,
+        gameId: player.gameid || null,
+      };
+    }
+
+    const onlineStates = new Set([1, 2, 3, 4, 5, 6]);
+    if (onlineStates.has(player.personastate)) {
+      return { state: 'online', gameName: null };
+    }
+
+    return { state: 'offline', gameName: null };
   }
 
   async apiGet(path, params = {}) {
@@ -178,9 +209,6 @@ class SteamProvider {
 
     await mapPool(candidates, ACHIEVEMENT_CONCURRENCY, async (game) => {
       const status = await this.getAchievementStatus(steamId, game.appid);
-      if (status.total > 0) {
-        console.log(`Steam achievements: ${game.name} (${game.appid}) ${status.unlocked}/${status.total}`);
-      }
       if (status.perfect) {
         perfect.push({
           appId: game.appid,
@@ -193,7 +221,6 @@ class SteamProvider {
     });
 
     perfect.sort((a, b) => a.name.localeCompare(b.name));
-    console.log(`Steam perfect scan: found ${perfect.length} of ${candidates.length} candidate games`);
 
     return perfect;
   }
@@ -263,7 +290,7 @@ class SteamProvider {
             return { perfect: false, unlocked, total: schemaTotal };
           }
         } catch {
-          // Fall back to player-only completion when schema is unavailable.
+          return { perfect: allPlayerUnlocked, unlocked, total };
         }
 
         return { perfect: allPlayerUnlocked, unlocked, total };

@@ -38,9 +38,8 @@ class NavRenderer {
     return `${value.slice(0, max - 1)}…`;
   }
 
-  static render(config, stats, username) {
+  static render(config, stats, username, sync = {}) {
     const version = stats.kernelVersion;
-    const steamOnline = stats.steam?.status === 'online';
     const tagline = this.escapeXml(this.truncate(config.profile.tagline, 52));
     const romance = this.renderRomanceCorner(config.romance);
     const hash = stats.commitHash || 'unknown';
@@ -52,7 +51,12 @@ class NavRenderer {
     const row1Y = dividerY + 16;
     const row2Y = row1Y + 18;
     const pulseY = y + h - 8;
-    const steamStatus = this.renderSteamStatus(steamOnline, word3X);
+    const steamStatus = this.renderSteamStatus(stats.steam, word3X);
+    const heartbeatIntensity = this.computeHeartbeatIntensity(stats);
+    const heartSync = this.renderHeartSync(markX, row1Y, {
+      aryaDuration: sync.aryaDuration,
+      romancePink: sync.romancePink,
+    });
 
     return `
       <g class="nav-group">
@@ -65,7 +69,7 @@ class NavRenderer {
           <tspan x="${padX}" class="keyColor">Kernel</tspan>
           <tspan x="${leftValX}" class="valueColor">ARYAOS v${version}</tspan>
           <tspan x="${rightKeyX}" class="keyColor nav-romance">${romance.label}</tspan>
-          <tspan x="${markX}" class="nav-romance">♥</tspan>
+          ${heartSync.heart}
           <tspan x="${word1X}" class="nav-romance">${romance.name}</tspan>
           <tspan x="${dot1X}" class="dim">·</tspan>
           <tspan x="${word2X}" class="nav-romance-soft">${romance.note}</tspan>
@@ -87,16 +91,52 @@ class NavRenderer {
           <tspan x="${word4X}" class="dim">${hash}</tspan>
         </text>
 
-        ${this.renderHeartbeat(padX, rightX, pulseY)}
+        ${this.renderHeartbeat(padX, rightX, pulseY, heartbeatIntensity)}
       </g>
     `;
   }
 
-  static renderSteamStatus(online, word3X) {
+  static renderHeartSync(markX, _rowY, sync = {}) {
+    const { aryaDuration: duration, romancePink = '#ff7eb6' } = sync;
+
+    if (!duration) {
+      return {
+        heart: `<tspan x="${markX}" class="nav-romance heart-beacon">♥</tspan>`,
+      };
+    }
+
+    const fillValues = `${romancePink};${romancePink};#ffd700;#fff4a3;#ffd700;${romancePink}`;
+
+    return {
+      heart: `<tspan x="${markX}" class="nav-romance heart-beacon">♥<animate attributeName="fill" values="${fillValues}" keyTimes="0;0.84;0.88;0.92;0.95;1" dur="${duration}s" repeatCount="indefinite" /></tspan>`,
+    };
+  }
+
+  static renderSteamStatus(steam = {}, word3X) {
+    const presence = steam.presence || {};
+    const online = steam.status === 'online';
+
+    if (presence.state === 'in-game' && presence.gameName) {
+      const game = this.escapeXml(this.truncate(presence.gameName, 16));
+      return `<tspan x="${word3X}" class="valueColor">Playing </tspan><tspan class="addColor">${game}</tspan>`;
+    }
+
     const stateClass = online ? 'addColor' : 'dim';
     const stateLabel = online ? 'Online' : 'Offline';
-
     return `<tspan x="${word3X}" class="valueColor">Steam </tspan><tspan class="${stateClass}">${stateLabel}</tspan>`;
+  }
+
+  static computeHeartbeatIntensity(stats = {}) {
+    const streak = stats.currentStreak ?? stats.raw?.currentStreak ?? 0;
+    const today = stats.todayContributions ?? 0;
+
+    if (streak === 0 && today === 0) {
+      return 0.18;
+    }
+
+    const streakBoost = Math.min(streak / 21, 0.45);
+    const todayBoost = Math.min(today / 8, 0.35);
+    return Math.min(1, 0.28 + streakBoost + todayBoost);
   }
 
   static renderRomanceCorner(romance = {}) {
@@ -107,7 +147,9 @@ class NavRenderer {
     };
   }
 
-  static renderHeartbeat(startX, endX, y) {
+  static renderHeartbeat(startX, endX, y, intensity = 0.5) {
+    const spike = Math.max(2, Math.round(7 * intensity));
+    const minor = Math.max(1, Math.round(4 * intensity));
     const beats = [];
     let cx = startX;
 
@@ -116,23 +158,26 @@ class NavRenderer {
       cx += 20;
       beats.push(`${cx},${y}`);
       cx += 5;
-      beats.push(`${cx},${y - 4}`);
+      beats.push(`${cx},${y - minor}`);
       cx += 5;
-      beats.push(`${cx},${y + 5}`);
+      beats.push(`${cx},${y + Math.round(minor * 1.2)}`);
       cx += 5;
-      beats.push(`${cx},${y - 7}`);
+      beats.push(`${cx},${y - spike}`);
       cx += 5;
-      beats.push(`${cx},${y + 3}`);
+      beats.push(`${cx},${y + Math.round(minor * 0.8)}`);
       cx += 5;
       beats.push(`${cx},${y}`);
       cx += 16;
     }
     beats.push(`${endX},${y}`);
 
+    const opacity = (0.22 + intensity * 0.28).toFixed(2);
+    const dotOpacity = (0.45 + intensity * 0.55).toFixed(2);
+
     return `
-      <polyline points="${beats.join(' ')}" class="nav-heartbeat" fill="none" />
-      <circle cx="${startX + 10}" cy="${y}" r="2.5" class="nav-heartbeat-dot">
-        <animate attributeName="opacity" values="0.35;1;0.35" dur="1.6s" repeatCount="indefinite" />
+      <polyline points="${beats.join(' ')}" class="nav-heartbeat" fill="none" opacity="${opacity}" />
+      <circle cx="${startX + 10}" cy="${y}" r="${intensity > 0.4 ? 2.8 : 2.2}" class="nav-heartbeat-dot" opacity="${dotOpacity}">
+        <animate attributeName="opacity" values="${dotOpacity};1;${dotOpacity}" dur="${(1.8 - intensity * 0.4).toFixed(1)}s" repeatCount="indefinite" />
       </circle>
     `;
   }

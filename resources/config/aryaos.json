@@ -2,7 +2,7 @@
   "profile": {
     "dob": "2000-05-12",
     "os": "AryaOS // Heartbeat Kernel",
-    "hosts": "Kyutefox · Black Rock Nepal",
+    "hosts": "Kyutefox · Sajilo Software",
     "kernel": "Senior Software Engineer",
     "tagline": "building systems that ship, scale, and stay sane"
   },
@@ -10,6 +10,12 @@
     "label": "Heart.Corner",
     "name": "Arya",
     "note": "my forever home"
+  },
+  "crew": {
+    "nodes": [
+      { "label": "Kyutefox", "org": "Kyutefox" },
+      { "label": "Sajilo Software", "org": "Sajilo-Software" }
+    ]
   },
   "stack": {
     "core": "TypeScript · JavaScript · PHP · HTML/CSS",
@@ -33,6 +39,12 @@
     "ownerOnly": false,
     "excludeRepos": []
   },
+  "achievements": [
+    { "id": "signal.stars_100", "label": "signal.feed · 100 stars", "field": "totalStars", "threshold": 100 },
+    { "id": "signal.contrib_1k", "label": "signal.feed · 1K contributions", "field": "totalContributions", "threshold": 1000 },
+    { "id": "kernel.streak_7d", "label": "kernel · 7-day streak", "field": "currentStreak", "threshold": 7 },
+    { "id": "gaming.perfect_sync", "label": "GAMING.DOCK · first perfect sync", "field": "perfectTotal", "threshold": 1 }
+  ],
   "themes": ["dark", "light"],
   "svg": {
     "title": "AryaOS — live engineering interface"
