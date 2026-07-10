@@ -23,6 +23,26 @@
   stroke: rgba(255, 255, 255, 0.06);
   stroke-width: 1;
 }
+.nav-panel {
+  fill: rgba(255, 166, 87, 0.04);
+  stroke: rgba(255, 166, 87, 0.12);
+}
+.nav-heartbeat {
+  stroke: #ffa657;
+  stroke-width: 1.2;
+  opacity: 0.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.nav-heartbeat-dot {
+  fill: #ffa657;
+}
+.nav-link {
+  fill: #58a6ff;
+}
+.nav-link:hover {
+  fill: #79c0ff;
+}
 .hero-title {
   fill: #f0f6fc;
   font-size: 22px;
