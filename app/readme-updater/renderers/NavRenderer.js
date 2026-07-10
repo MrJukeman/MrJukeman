@@ -9,6 +9,16 @@ const NAV = {
   leftValX: 172,
   rightKeyX: 538,
   rightValX: 662,
+  rightCol: {
+    markX: 662,
+    word1X: 675,
+    dot1X: 711,
+    word2X: 725,
+    dot2X: 779,
+    word3X: 791,
+    dot3X: 878,
+    word4X: 890,
+  },
 };
 
 class NavRenderer {
@@ -32,31 +42,33 @@ class NavRenderer {
     const version = stats.kernelVersion;
     const steamOnline = stats.steam?.status === 'online';
     const tagline = this.escapeXml(this.truncate(config.profile.tagline, 52));
-    const directive = this.escapeXml(this.truncate(config.profile.kernel, 28));
+    const romance = this.renderRomanceCorner(config.romance);
     const hash = stats.commitHash || 'unknown';
     const profileUrl = `https://github.com/${this.escapeXml(username)}`;
-    const { x, y, w, h, padX, rightX, leftValX, rightKeyX, rightValX } = NAV;
+    const { x, y, w, h, padX, rightX, leftValX, rightKeyX, rightCol } = NAV;
+    const { markX, word1X, dot1X, word2X, dot2X, word3X, dot3X, word4X } = rightCol;
     const headerY = y + 22;
     const dividerY = headerY + 10;
     const row1Y = dividerY + 16;
     const row2Y = row1Y + 18;
     const pulseY = y + h - 8;
-    const steamClass = steamOnline ? 'addColor' : 'dim';
-    const steamLabel = steamOnline ? 'steam online' : 'steam offline';
-    const birthday = this.birthdayNote();
+    const steamStatus = this.renderSteamStatus(steamOnline, word3X);
 
     return `
       <g class="nav-group">
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="panel nav-panel" />
         <text x="${padX}" y="${headerY}" class="section-label">◈ SYSTEM.HEADER</text>
-        <text x="${rightX}" y="${headerY}" text-anchor="end" class="gaming-stats">${tagline}${birthday}</text>
+        <text x="${rightX}" y="${headerY}" text-anchor="end" class="gaming-stats">${tagline}</text>
         <line x1="${padX}" y1="${dividerY}" x2="${rightX}" y2="${dividerY}" class="gaming-divider" />
 
         <text y="${row1Y}" class="row">
           <tspan x="${padX}" class="keyColor">Kernel</tspan>
           <tspan x="${leftValX}" class="valueColor">ARYAOS v${version}</tspan>
-          <tspan x="${rightKeyX}" class="keyColor">Prime.Directive</tspan>
-          <tspan x="${rightValX}" class="valueColor">${directive}</tspan>
+          <tspan x="${rightKeyX}" class="keyColor nav-romance">${romance.label}</tspan>
+          <tspan x="${markX}" class="nav-romance">♥</tspan>
+          <tspan x="${word1X}" class="nav-romance">${romance.name}</tspan>
+          <tspan x="${dot1X}" class="dim">·</tspan>
+          <tspan x="${word2X}" class="nav-romance-soft">${romance.note}</tspan>
         </text>
 
         <text y="${row2Y}" class="row">
@@ -65,14 +77,14 @@ class NavRenderer {
             <tspan x="${leftValX}" class="nav-link">@${this.escapeXml(username)}</tspan>
           </a>
           <tspan x="${rightKeyX}" class="keyColor">Uplink</tspan>
-          <tspan x="${rightValX}" class="addColor">●</tspan>
-          <tspan class="valueColor" dx="5">live</tspan>
-          <tspan class="dim" dx="6">·</tspan>
-          <tspan class="valueColor" dx="6">github</tspan>
-          <tspan class="dim" dx="6">·</tspan>
-          <tspan class="${steamClass}" dx="6">${steamLabel}</tspan>
-          <tspan class="dim" dx="6">·</tspan>
-          <tspan class="dim" dx="6">${hash}</tspan>
+          <tspan x="${markX}" class="addColor">●</tspan>
+          <tspan x="${word1X}" class="valueColor">Live</tspan>
+          <tspan x="${dot1X}" class="dim">·</tspan>
+          <tspan x="${word2X}" class="valueColor">GitHub</tspan>
+          <tspan x="${dot2X}" class="dim">·</tspan>
+          ${steamStatus}
+          <tspan x="${dot3X}" class="dim">·</tspan>
+          <tspan x="${word4X}" class="dim">${hash}</tspan>
         </text>
 
         ${this.renderHeartbeat(padX, rightX, pulseY)}
@@ -80,12 +92,19 @@ class NavRenderer {
     `;
   }
 
-  static birthdayNote() {
-    const today = new Date();
-    if (today.getMonth() === 4 && today.getDate() === 12) {
-      return ' · birthday kernel';
-    }
-    return '';
+  static renderSteamStatus(online, word3X) {
+    const stateClass = online ? 'addColor' : 'dim';
+    const stateLabel = online ? 'Online' : 'Offline';
+
+    return `<tspan x="${word3X}" class="valueColor">Steam </tspan><tspan class="${stateClass}">${stateLabel}</tspan>`;
+  }
+
+  static renderRomanceCorner(romance = {}) {
+    return {
+      label: this.escapeXml(romance.label || 'Heart.Corner'),
+      name: this.escapeXml(this.truncate(romance.name || 'you', 4)),
+      note: this.escapeXml(this.truncate(romance.note || 'always', 18)),
+    };
   }
 
   static renderHeartbeat(startX, endX, y) {
