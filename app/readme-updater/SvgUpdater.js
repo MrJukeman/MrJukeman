@@ -1,11 +1,12 @@
 import fs from 'fs';
 import ConfigLoader from './ConfigLoader.js';
 import ButterflyRenderer from './renderers/ButterflyRenderer.js';
+import NavRenderer, { NAV } from './renderers/NavRenderer.js';
 import { formatDelta, getAge, getNptTimestamp } from '../../helpers/functions.js';
 
 const PAD = {
   top: 22,
-  bottom: 14,
+  bottom: 18,
   labelToRow: 24,
   rowStep: 22,
   subToRow: 16,
@@ -15,18 +16,46 @@ const PAD = {
   gamingSectionGap: 13,
 };
 
+const NAV_GAP = 14;
+const ROW_GAP = 14;
+const FOOTER_GAP = 20;
+
 const L = {
   x1: 28,
   x2: 510,
   colW: 462,
   col3a: 28,
   col3w: 300,
-  topRowY: 100,
-  topRowH: PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom,
-  midRowY: 100 + PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom + 8,
-  midRowH: PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom,
-  bottomRowY: 368,
-  bottomRowH: 132,
+  get topRowY() {
+    return NAV.bottom + NAV_GAP;
+  },
+  get topRowH() {
+    return PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom;
+  },
+  get midRowY() {
+    return this.topRowY + this.topRowH + ROW_GAP;
+  },
+  get midRowH() {
+    return PAD.top + PAD.labelToRow + 3 * PAD.rowStep + PAD.bottom;
+  },
+  get topLabelY() {
+    return this.topRowY + PAD.top;
+  },
+  get topFirstRowY() {
+    return this.topLabelY + PAD.labelToRow;
+  },
+  get bottomRowY() {
+    return this.midRowY + this.midRowH + ROW_GAP;
+  },
+  get bottomRowH() {
+    return 140;
+  },
+  get footerY() {
+    return this.bottomRowY + this.bottomRowH + FOOTER_GAP;
+  },
+  get svgHeight() {
+    return this.footerY + 14;
+  },
   gaming: {
     x: 348,
     w: 624,
@@ -118,6 +147,8 @@ class SvgUpdater {
       const replacements = {
         '{css}': cssByTheme[theme],
         '{svg_title}': config.svg.title,
+        '{svg_height}': String(L.svgHeight),
+        '{footer_y}': String(L.footerY),
         '{accent_a}': accentA,
         '{accent_b}': accentB,
         '{butterflies_back}': butterflies.back,
@@ -161,8 +192,7 @@ class SvgUpdater {
 
   static renderTopPanels(config, stats, age, syncTime, username) {
     return `
-      ${this.renderHeader(config, stats, username)}
-      <line x1="28" y1="94" x2="972" y2="94" class="header-divider" />
+      ${NavRenderer.render(config, stats, username)}
       ${this.panel(L.x1, L.topRowY, L.colW, L.topRowH)}
       ${this.panel(L.x2, L.topRowY, L.colW, L.topRowH)}
       ${this.panel(L.x1, L.midRowY, L.colW, L.midRowH)}
@@ -174,33 +204,27 @@ class SvgUpdater {
     `;
   }
 
-  static renderHeader(config, stats, username) {
-    const boot = this.renderBootStatus(stats);
-    return `
-      <text x="28" y="36" class="hero-title"><tspan>ARYAOS</tspan><tspan class="hero-version" dx="18">v${stats.kernelVersion}</tspan></text>
-      <text x="28" y="56" class="hero-sub">${config.profile.tagline}</text>
-      <text x="28" y="76" class="hero-user">@${username} · live engineering interface</text>
-      <text x="972" y="42" text-anchor="end" class="boot-line">${boot}</text>
-    `;
-  }
-
   static renderIdentityPanel(config, age) {
+    const labelY = L.topLabelY;
+    const firstRowY = L.topFirstRowY;
     return `
-      <text x="${L.left.keyX}" y="122" class="section-label">◈ IDENTITY</text>
-      ${this.kvRow(146, 'Platform', config.profile.os)}
-      ${this.kvRow(168, 'Role', config.profile.kernel)}
-      ${this.kvRow(190, 'Crew', config.profile.hosts)}
-      ${this.kvRow(212, 'Runtime.Age', age)}
+      <text x="${L.left.keyX}" y="${labelY}" class="section-label">◈ IDENTITY</text>
+      ${this.kvRow(firstRowY, 'Platform', config.profile.os)}
+      ${this.kvRow(firstRowY + PAD.rowStep, 'Role', config.profile.kernel)}
+      ${this.kvRow(firstRowY + 2 * PAD.rowStep, 'Crew', config.profile.hosts)}
+      ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Runtime.Age', age)}
     `;
   }
 
   static renderRuntimePanel(config, stats, syncTime) {
+    const labelY = L.topLabelY;
+    const firstRowY = L.topFirstRowY;
     return `
-      <text x="${L.right.keyX}" y="122" class="section-label">◈ RUNTIME</text>
-      ${this.kvRow(146, 'Clock.NPT', syncTime, 'right')}
-      ${this.kvRow(168, 'Build.Channel', stats.kernelVersion, 'right')}
-      ${this.kvRow(190, 'Sync.Status', `online · hash ${stats.commitHash}`, 'right')}
-      ${this.kvRow(212, 'Toolkit', config.stack.utility, 'right')}
+      <text x="${L.right.keyX}" y="${labelY}" class="section-label">◈ RUNTIME</text>
+      ${this.kvRow(firstRowY, 'Clock.NPT', syncTime, 'right')}
+      ${this.kvRow(firstRowY + PAD.rowStep, 'Build.Channel', stats.kernelVersion, 'right')}
+      ${this.kvRow(firstRowY + 2 * PAD.rowStep, 'Sync.Status', `online · hash ${stats.commitHash}`, 'right')}
+      ${this.kvRow(firstRowY + 3 * PAD.rowStep, 'Toolkit', config.stack.utility, 'right')}
     `;
   }
 
@@ -392,13 +416,6 @@ class SvgUpdater {
     });
 
     return `<text x="${x}" y="${y}" class="gaming-trophy">${inner}</text>`;
-  }
-
-  static renderBootStatus(stats) {
-    const today = new Date();
-    const isBirthday = today.getMonth() === 4 && today.getDate() === 12;
-    const birthday = isBirthday ? ' · birthday kernel unlocked' : '';
-    return `boot ▸ aryaos ${stats.kernelVersion} ▸ github mounted ▸ telemetry live${birthday}`;
   }
 
   static renderFooter(syncTime, commitHash) {
