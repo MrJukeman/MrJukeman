@@ -4,88 +4,79 @@ import { fileURLToPath } from 'url';
 import { getGithubContributions } from 'github-contributions-counter';
 import GitHubAPI from '../GitHubAPI.js';
 import ConfigLoader from '../ConfigLoader.js';
+import { mapPool, withRetry } from '../../../helpers/async.js';
 import { formatNumber, formatLanguageName } from '../../../helpers/functions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function withRetry(task, label, attempts = 5) {
-  let lastError = null;
-
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    try {
-      return await task();
-    } catch (error) {
-      lastError = error;
-      if (attempt === attempts) {
-        break;
-      }
-      const delayMs = 2 ** attempt * 1000;
-      console.warn(`${label} failed — retry ${attempt}/${attempts} in ${delayMs}ms`);
-      await sleep(delayMs);
-    }
-  }
-
-  throw lastError;
-}
+const LANGUAGE_CONCURRENCY = 10;
+const LOC_CONCURRENCY = 5;
 
 class GitHubProvider {
   constructor(username, accessToken) {
     this.username = username;
     this.githubAPI = new GitHubAPI(accessToken);
+    this.restHeaders = {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/vnd.github+json',
+    };
   }
 
   async collect() {
-    const contributionsResponse = await withRetry(
-      () =>
-        getGithubContributions({
-          username: this.username,
-          token: this.githubAPI.accessToken,
-        }),
-      'Contributions API',
-    );
-
-    const userData = await this.githubAPI.fetchUserData(this.username);
-    const events = await this.fetchRecentEvents();
-
-    let repoStats = {
-      totalStars: 0,
-      totalCommits: 0,
-      totalAdditions: 0,
-      totalDeletions: 0,
-      repositories: [],
-    };
-
-    try {
-      repoStats = await this.fetchRepositoryStats();
-    } catch (error) {
-      console.warn('Repo stats skipped:', error.message || error);
-    }
+    const [contributionsResponse, userData] = await Promise.all([
+      withRetry(
+        () =>
+          getGithubContributions({
+            username: this.username,
+            token: this.githubAPI.accessToken,
+          }),
+        'Contributions API',
+      ),
+      this.githubAPI.fetchUserData(this.username),
+    ]);
 
     const calendar =
       contributionsResponse.data.data.user.contributionsCollection.contributionCalendar;
     const { public_repos, followers, owned_private_repos = 0 } = userData;
-
-    const streaks = this.computeStreaks(calendar.weeks);
+    const { current: currentStreak, longest: longestStreak } = this.computeStreaks(calendar.weeks);
     const velocity = this.computeVelocity(calendar.weeks);
 
-    let languageRepos = repoStats.repositories;
-    try {
-      languageRepos = await this.fetchRepositoriesForLanguages();
-    } catch (error) {
-      console.warn('Full language repo scan failed, using partial set:', error.message || error);
-    }
-
-    const languages = this.aggregateLanguages(this.filterLanguageRepos(languageRepos));
-
+    let totalStars = 0;
+    let totalCommits = 0;
+    let languages = [];
     let locStats = { totalAdditions: 0, totalDeletions: 0 };
+
     try {
-      locStats = await this.fetchLocStats();
+      const accessibleRepos = await this.fetchAllAccessibleReposREST();
+      const nonForkRepos = accessibleRepos.filter((repo) => !repo.fork);
+      const eligibleRepos = nonForkRepos.filter((repo) => this.matchesRepoFilter(repo));
+
+      totalStars = nonForkRepos.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+
+      const [commitsResult, languagesResult, locResult] = await Promise.allSettled([
+        this.fetchTotalCommits(),
+        this.enrichReposWithLanguages(eligibleRepos).then((repos) => this.aggregateLanguages(repos)),
+        this.fetchLocStats(eligibleRepos),
+      ]);
+
+      if (commitsResult.status === 'fulfilled') {
+        totalCommits = commitsResult.value;
+      } else {
+        console.warn('Commit totals skipped:', commitsResult.reason?.message || commitsResult.reason);
+      }
+
+      if (languagesResult.status === 'fulfilled') {
+        languages = languagesResult.value;
+      } else {
+        console.warn('Language scan failed:', languagesResult.reason?.message || languagesResult.reason);
+      }
+
+      if (locResult.status === 'fulfilled') {
+        locStats = locResult.value;
+      } else {
+        console.warn('LOC stats skipped:', locResult.reason?.message || locResult.reason);
+      }
     } catch (error) {
-      console.warn('LOC stats skipped:', error.message || error);
+      console.warn('Repo scan skipped:', error.message || error);
     }
 
     const commitHash = this.getLatestCommitHash();
@@ -95,103 +86,67 @@ class GitHubProvider {
       totalRepos: formatNumber(public_repos + owned_private_repos),
       totalContributions: formatNumber(calendar.totalContributions),
       followers: formatNumber(followers),
-      totalStars: formatNumber(repoStats.totalStars),
-      totalCommits: formatNumber(repoStats.totalCommits),
+      totalStars: formatNumber(totalStars),
+      totalCommits: formatNumber(totalCommits),
       totalAdditions: formatNumber(locStats.totalAdditions),
       totalDeletions: formatNumber(locStats.totalDeletions),
       totalLinesChanged: formatNumber(totalLinesChanged),
-      currentStreak: streaks.current,
-      longestStreak: streaks.longest,
+      currentStreak,
+      longestStreak,
       velocityPercent: velocity.percent,
       velocityTrend: velocity.trend,
-      contributionsThisYear: calendar.totalContributions,
-      heatmapWeeks: calendar.weeks,
       languages,
-      events,
       kernelVersion: `6.${new Date().getFullYear()}.${calendar.totalContributions}`,
       commitHash,
       raw: {
         totalRepos: public_repos + owned_private_repos,
         totalContributions: calendar.totalContributions,
         followers,
-        totalStars: repoStats.totalStars,
-        totalCommits: repoStats.totalCommits,
+        totalStars,
+        totalCommits,
         totalAdditions: locStats.totalAdditions,
         totalDeletions: locStats.totalDeletions,
         totalLinesChanged,
-        currentStreak: streaks.current,
-        longestStreak: streaks.longest,
+        currentStreak,
+        longestStreak,
       },
     };
   }
 
-  async fetchRecentEvents() {
-    const url = `https://api.github.com/users/${this.username}/events/public?per_page=4`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${this.githubAPI.accessToken}`,
-        Accept: 'application/vnd.github+json',
-      },
-    };
-
-    try {
-      const data = await this.githubAPI.fetchGitHubAPI(url, options);
-      return data.map((event) => this.formatEvent(event)).filter(Boolean);
-    } catch {
-      return ['[kernel] github: events channel unavailable'];
+  getRepoFilter() {
+    if (!this._repoFilter) {
+      const config = ConfigLoader.load();
+      const processConfig = config.process ?? {};
+      this._repoFilter = {
+        ownerOnly: processConfig.ownerOnly !== false,
+        exclude: new Set(
+          (processConfig.excludeRepos ?? []).map((repo) => repo.trim().toLowerCase()).filter(Boolean),
+        ),
+        username: this.username.toLowerCase(),
+      };
     }
+    return this._repoFilter;
   }
 
-  formatEvent(event) {
-    const ts = (event.created_at || '').slice(11, 19);
-    const repo = (event.repo?.name || 'unknown').replace(`${this.username}/`, '');
+  matchesRepoFilter(repo) {
+    const { ownerOnly, exclude, username } = this.getRepoFilter();
+    const repoName = (repo.name || '').toLowerCase();
 
-    switch (event.type) {
-      case 'PushEvent': {
-        const count = event.payload?.commits?.length || 0;
-        return `[${ts}] github: pushed ${count} commit(s) to ${repo}`;
-      }
-      case 'PullRequestEvent': {
-        const action = event.payload?.action || 'updated';
-        return `[${ts}] github: PR ${action} on ${repo}`;
-      }
-      case 'IssuesEvent': {
-        const action = event.payload?.action || 'updated';
-        return `[${ts}] github: issue ${action} on ${repo}`;
-      }
-      case 'CreateEvent': {
-        const ref = event.payload?.ref_type || 'resource';
-        return `[${ts}] github: created ${ref} in ${repo}`;
-      }
-      case 'WatchEvent':
-        return `[${ts}] github: starred ${repo}`;
-      default:
-        return `[${ts}] github: ${event.type.replace('Event', '').toLowerCase()} on ${repo}`;
+    if (exclude.has(repoName)) {
+      return false;
     }
+
+    if (!ownerOnly) {
+      return true;
+    }
+
+    const ownerLogin = repo.owner?.login?.toLowerCase() ?? '';
+    const ownerType = repo.owner?.type === 'Organization' ? 'Organization' : 'User';
+    return ownerType === 'User' && ownerLogin === username;
   }
 
-  async fetchRepositoryStats() {
-    const nodes = await this.fetchAllRepositories();
-
-    let totalStars = 0;
+  async fetchTotalCommits() {
     let totalCommits = 0;
-
-    for (const repo of nodes) {
-      totalStars += repo.stargazers.totalCount;
-      totalCommits += repo.defaultBranchRef?.target?.history.totalCount || 0;
-    }
-
-    return {
-      totalStars,
-      totalCommits,
-      totalAdditions: 0,
-      totalDeletions: 0,
-      repositories: nodes,
-    };
-  }
-
-  async fetchAllRepositories() {
-    const nodes = [];
     let cursor = null;
     let hasNextPage = true;
 
@@ -210,16 +165,6 @@ class GitHubProvider {
                 endCursor
               }
               nodes {
-                name
-                isPrivate
-                owner {
-                  login
-                  __typename
-                }
-                stargazers { totalCount }
-                languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
-                  edges { size node { name } }
-                }
                 defaultBranchRef {
                   target {
                     ... on Commit {
@@ -238,19 +183,15 @@ class GitHubProvider {
       });
       const connection = data.data.user.repositories;
 
-      nodes.push(...connection.nodes);
+      for (const repo of connection.nodes) {
+        totalCommits += repo.defaultBranchRef?.target?.history.totalCount || 0;
+      }
+
       hasNextPage = connection.pageInfo.hasNextPage;
       cursor = connection.pageInfo.endCursor;
     }
 
-    return nodes;
-  }
-
-  restHeaders() {
-    return {
-      Authorization: `Bearer ${this.githubAPI.accessToken}`,
-      Accept: 'application/vnd.github+json',
-    };
+    return totalCommits;
   }
 
   async fetchAllAccessibleReposREST() {
@@ -261,7 +202,7 @@ class GitHubProvider {
       const url =
         `https://api.github.com/user/repos?per_page=100&page=${page}` +
         '&affiliation=owner,organization_member,collaborator&sort=updated';
-      const batch = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders() });
+      const batch = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders });
 
       if (!Array.isArray(batch) || batch.length === 0) {
         break;
@@ -279,19 +220,15 @@ class GitHubProvider {
     return repos;
   }
 
-  async fetchRepoLanguagesREST(owner, name) {
-    const url = `https://api.github.com/repos/${owner}/${name}/languages`;
-    return this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders() });
-  }
-
   async enrichRepoWithLanguages(repo) {
     const owner = repo.owner?.login ?? '';
     const ownerType = repo.owner?.type === 'Organization' ? 'Organization' : 'User';
     let edges = [];
 
     try {
-      const languages = await this.fetchRepoLanguagesREST(owner, repo.name);
-      edges = Object.entries(languages).map(([langName, size]) => ({
+      const url = `https://api.github.com/repos/${owner}/${repo.name}/languages`;
+      const languageData = await this.githubAPI.fetchGitHubAPI(url, { headers: this.restHeaders });
+      edges = Object.entries(languageData).map(([langName, size]) => ({
         size,
         node: { name: langName },
       }));
@@ -307,19 +244,8 @@ class GitHubProvider {
     };
   }
 
-  async fetchRepositoriesForLanguages() {
-    const accessible = await this.fetchAllAccessibleReposREST();
-    const nonFork = accessible.filter((repo) => !repo.fork);
-    const enriched = [];
-    const chunkSize = 10;
-
-    for (let i = 0; i < nonFork.length; i += chunkSize) {
-      const chunk = nonFork.slice(i, i + chunkSize);
-      const results = await Promise.all(chunk.map((repo) => this.enrichRepoWithLanguages(repo)));
-      enriched.push(...results);
-    }
-
-    return enriched;
+  async enrichReposWithLanguages(repos) {
+    return mapPool(repos, LANGUAGE_CONCURRENCY, (repo) => this.enrichRepoWithLanguages(repo));
   }
 
   sumContributorWeeks(contributors) {
@@ -341,73 +267,24 @@ class GitHubProvider {
     return { additions, deletions };
   }
 
-  mapRestRepoForFilter(repo) {
-    return {
-      name: repo.name,
-      fork: repo.fork,
-      owner: {
-        login: repo.owner?.login ?? '',
-        __typename: repo.owner?.type === 'Organization' ? 'Organization' : 'User',
-      },
-    };
-  }
-
-  async fetchLocStats() {
-    const accessible = await this.fetchAllAccessibleReposREST();
-    const repos = this.filterLanguageRepos(
-      accessible.filter((repo) => !repo.fork).map((repo) => this.mapRestRepoForFilter(repo)),
-    );
-
-    let totalAdditions = 0;
-    let totalDeletions = 0;
-    const chunkSize = 5;
-
-    for (let i = 0; i < repos.length; i += chunkSize) {
-      const chunk = repos.slice(i, i + chunkSize);
-      const results = await Promise.all(
-        chunk.map(async (repo) => {
-          try {
-            const contributors = await this.githubAPI.fetchContributorStats(repo.owner.login, repo.name);
-            return this.sumContributorWeeks(contributors);
-          } catch (error) {
-            console.warn(`LOC stats skipped for ${repo.owner.login}/${repo.name}:`, error.message || error);
-            return { additions: 0, deletions: 0 };
-          }
-        }),
-      );
-
-      for (const stats of results) {
-        totalAdditions += stats.additions;
-        totalDeletions += stats.deletions;
+  async fetchLocStats(eligibleRepos) {
+    const totals = await mapPool(eligibleRepos, LOC_CONCURRENCY, async (repo) => {
+      try {
+        const contributors = await this.githubAPI.fetchContributorStats(repo.owner.login, repo.name);
+        return this.sumContributorWeeks(contributors);
+      } catch (error) {
+        console.warn(`LOC stats skipped for ${repo.owner.login}/${repo.name}:`, error.message || error);
+        return { additions: 0, deletions: 0 };
       }
-    }
-
-    return { totalAdditions, totalDeletions };
-  }
-
-  filterLanguageRepos(repositories) {
-    const config = ConfigLoader.load();
-    const processConfig = config.process ?? {};
-    const ownerOnly = processConfig.ownerOnly !== false;
-    const exclude = new Set(
-      (processConfig.excludeRepos ?? []).map((repo) => repo.trim().toLowerCase()).filter(Boolean),
-    );
-    const username = this.username.toLowerCase();
-
-    return repositories.filter((repo) => {
-      const repoName = (repo.name || '').toLowerCase();
-      if (exclude.has(repoName)) {
-        return false;
-      }
-
-      if (!ownerOnly) {
-        return true;
-      }
-
-      const ownerLogin = repo.owner?.login?.toLowerCase() ?? '';
-      const ownerType = repo.owner?.__typename ?? '';
-      return ownerType === 'User' && ownerLogin === username;
     });
+
+    return totals.reduce(
+      (acc, stats) => ({
+        totalAdditions: acc.totalAdditions + stats.additions,
+        totalDeletions: acc.totalDeletions + stats.deletions,
+      }),
+      { totalAdditions: 0, totalDeletions: 0 },
+    );
   }
 
   aggregateLanguages(repositories) {

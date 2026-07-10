@@ -1,6 +1,5 @@
 import GitHubProvider from './providers/GitHubProvider.js';
 import SteamProvider from './providers/SteamProvider.js';
-import Cache from './Cache.js';
 
 class Statistics {
   constructor(username, accessToken) {
@@ -15,34 +14,10 @@ class Statistics {
         this.provider.collect(),
         this.steamProvider.collect(),
       ]);
-      const previous = Cache.read();
-      const deltas = Cache.computeDeltas(stats.raw, previous?.raw ?? previous);
 
-      Cache.write({
-        raw: stats.raw,
-        heatmapWeeks: stats.heatmapWeeks,
-        languages: stats.languages,
-        events: stats.events,
-        velocityPercent: stats.velocityPercent,
-        velocityTrend: stats.velocityTrend,
-        kernelVersion: stats.kernelVersion,
-        steam: {
-          topGames: steam.topGames,
-          dockGames: steam.dockGames ?? [],
-          perfectGames: steam.perfectGames,
-          perfectGamesAll: steam.perfectGamesAll ?? [],
-          perfectTotal: steam.perfectTotal ?? 0,
-          totalPlaytimeHours: steam.totalPlaytimeHours ?? null,
-          lastPerfectScan: steam.lastPerfectScan ?? null,
-          perfectScanVersion: steam.perfectScanVersion ?? 1,
-          status: steam.status,
-          profileUrl: steam.profileUrl,
-        },
-      });
-
-      return { ...stats, steam, deltas };
+      return { ...stats, steam, deltas: {} };
     } catch (error) {
-      console.error('Error fetching GitHub stats:', error.message || error);
+      console.error('Error fetching live stats:', error.message || error);
       if (error.stack) {
         console.error(error.stack);
       }

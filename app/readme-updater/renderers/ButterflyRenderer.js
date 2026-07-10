@@ -14,19 +14,19 @@ const PALETTE = [
 ];
 
 const ZONES = [
-  { id: 'top-left', xMin: 16, xMax: 260, yMin: 16, yMax: 130 },
-  { id: 'top-right', xMin: 740, xMax: 984, yMin: 16, yMax: 130 },
-  { id: 'bottom-left', xMin: 16, xMax: 260, yMin: 530, yMax: 664 },
-  { id: 'bottom-right', xMin: 740, xMax: 984, yMin: 530, yMax: 664 },
-  { id: 'mid-left', xMin: 16, xMax: 220, yMin: 200, yMax: 440 },
-  { id: 'mid-right', xMin: 780, xMax: 984, yMin: 200, yMax: 440 },
-  { id: 'center-top', xMin: 320, xMax: 680, yMin: 16, yMax: 110 },
-  { id: 'center-mid', xMin: 320, xMax: 680, yMin: 300, yMax: 460 },
-  { id: 'center-bottom', xMin: 320, xMax: 680, yMin: 520, yMax: 664 },
+  { xMin: 16, xMax: 260, yMin: 16, yMax: 130 },
+  { xMin: 740, xMax: 984, yMin: 16, yMax: 130 },
+  { xMin: 16, xMax: 260, yMin: 530, yMax: 664 },
+  { xMin: 740, xMax: 984, yMin: 530, yMax: 664 },
+  { xMin: 16, xMax: 220, yMin: 200, yMax: 440 },
+  { xMin: 780, xMax: 984, yMin: 200, yMax: 440 },
+  { xMin: 320, xMax: 680, yMin: 16, yMax: 110 },
+  { xMin: 320, xMax: 680, yMin: 300, yMax: 460 },
+  { xMin: 320, xMax: 680, yMin: 520, yMax: 664 },
 ];
 
 class ButterflyRenderer {
-  static render(width = 1000, height = 680, seed = Date.now()) {
+  static render(seed = Date.now()) {
     const rng = new Random(seed);
     const count = rng.int(16, 22);
     const backLayer = [];
@@ -34,7 +34,7 @@ class ButterflyRenderer {
 
     for (let i = 0; i < count; i += 1) {
       const zone = ZONES[i % ZONES.length];
-      const butterfly = this.createButterfly(rng, zone, i);
+      const butterfly = this.createButterfly(rng, zone);
       if (i % 2 === 0) {
         backLayer.push(butterfly);
       } else {
@@ -48,7 +48,7 @@ class ButterflyRenderer {
     };
   }
 
-  static createButterfly(rng, zone, index) {
+  static createButterfly(rng, zone) {
     const colorA = PALETTE[rng.int(0, PALETTE.length - 1)];
     const colorB = PALETTE[rng.int(0, PALETTE.length - 1)];
     const scale = rng.float(0.65, 1.25);

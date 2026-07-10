@@ -1,16 +1,9 @@
 import fetch from 'node-fetch';
-import Cache from '../Cache.js';
 import ConfigLoader from '../ConfigLoader.js';
+import { mapPool, sleep } from '../../../helpers/async.js';
 
 const API_BASE = 'https://api.steampowered.com';
-const PERFECT_SCAN_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
-const PERFECT_SCAN_VERSION = 4;
 const ACHIEVEMENT_CONCURRENCY = 4;
-const ACHIEVEMENT_CHECK_DELAY_MS = 120;
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function isAchievementUnlocked(entry) {
   const value = entry?.achieved;
@@ -29,22 +22,6 @@ function formatPlaytime(minutes) {
     return String(Math.round(hours));
   }
   return hours.toFixed(1);
-}
-
-async function mapPool(items, limit, worker) {
-  const results = new Array(items.length);
-  let index = 0;
-
-  async function run() {
-    while (index < items.length) {
-      const current = index;
-      index += 1;
-      results[current] = await worker(items[current], current);
-    }
-  }
-
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => run()));
-  return results;
 }
 
 class SteamProvider {
@@ -78,8 +55,7 @@ class SteamProvider {
       const steamId = await this.resolveSteamId();
       const ownedGames = await this.fetchOwnedGames(steamId);
       const topGames = this.pickTopGames(ownedGames);
-      const perfectScan = await this.resolvePerfectGames(steamId, ownedGames);
-      const perfectGames = perfectScan.games;
+      const perfectGames = await this.scanPerfectGames(steamId, ownedGames);
       const perfectIds = new Set(perfectGames.map((game) => game.appId));
       const dockGames = await this.buildDockGames(steamId, ownedGames, perfectIds);
       const totalPlaytimeMinutes = ownedGames.reduce(
@@ -94,17 +70,10 @@ class SteamProvider {
         dockGames,
         perfectGames: perfectGames.slice(0, this.perfectCount),
         perfectTotal: perfectGames.length,
-        perfectGamesAll: perfectGames,
         totalPlaytimeHours: formatPlaytime(totalPlaytimeMinutes),
-        lastPerfectScan: perfectScan.lastPerfectScan,
-        perfectScanVersion: perfectScan.perfectScanVersion,
       };
     } catch (error) {
       console.warn('Steam API error:', error.message || error);
-      const cached = Cache.read()?.steam;
-      if (cached?.topGames?.length) {
-        return { ...cached, status: 'cached', profileUrl: this.profileUrl };
-      }
       return this.offlinePayload(error.message || 'steam unavailable');
     }
   }
@@ -179,7 +148,6 @@ class SteamProvider {
         appId: game.appid,
         name: game.name,
         hours: formatPlaytime(game.playtime_forever),
-        minutes: game.playtime_forever,
       }));
   }
 
@@ -189,50 +157,26 @@ class SteamProvider {
       .sort((a, b) => b.playtime_forever - a.playtime_forever)
       .slice(0, this.displayCount);
 
-    const dockGames = [];
-
-    for (const game of candidates) {
-      await sleep(ACHIEVEMENT_CHECK_DELAY_MS);
+    return mapPool(candidates, ACHIEVEMENT_CONCURRENCY, async (game) => {
       const status = await this.getAchievementStatus(steamId, game.appid);
       const total = status.total || 0;
       const unlocked = status.unlocked || 0;
 
-      dockGames.push({
+      return {
         appId: game.appid,
         name: game.name,
         hours: formatPlaytime(game.playtime_forever),
-        minutes: game.playtime_forever,
         achievementsUnlocked: unlocked,
         achievementsTotal: total,
-        achievementPercent: total > 0 ? Math.round((unlocked / total) * 100) : 0,
-      });
-    }
-
-    return dockGames;
+      };
+    });
   }
 
-  async resolvePerfectGames(steamId, games) {
-    const cache = Cache.read();
-    const lastScan = cache?.steam?.lastPerfectScan ? Date.parse(cache.steam.lastPerfectScan) : 0;
-    const scanVersion = cache?.steam?.perfectScanVersion ?? 1;
-    const freshEnough =
-      scanVersion === PERFECT_SCAN_VERSION &&
-      Date.now() - lastScan < PERFECT_SCAN_INTERVAL_MS;
-
-    if (freshEnough && Array.isArray(cache?.steam?.perfectGamesAll) && cache.steam.perfectGamesAll.length) {
-      return {
-        games: cache.steam.perfectGamesAll,
-        lastPerfectScan: cache.steam.lastPerfectScan,
-        perfectScanVersion: scanVersion,
-        fromCache: true,
-      };
-    }
-
+  async scanPerfectGames(steamId, games) {
     const candidates = this.buildPerfectCandidates(games);
     const perfect = [];
 
     await mapPool(candidates, ACHIEVEMENT_CONCURRENCY, async (game) => {
-      await sleep(ACHIEVEMENT_CHECK_DELAY_MS);
       const status = await this.getAchievementStatus(steamId, game.appid);
       if (status.total > 0) {
         console.log(`Steam achievements: ${game.name} (${game.appid}) ${status.unlocked}/${status.total}`);
@@ -251,27 +195,17 @@ class SteamProvider {
     perfect.sort((a, b) => a.name.localeCompare(b.name));
     console.log(`Steam perfect scan: found ${perfect.length} of ${candidates.length} candidate games`);
 
-    return {
-      games: perfect,
-      lastPerfectScan: new Date().toISOString(),
-      perfectScanVersion: PERFECT_SCAN_VERSION,
-      fromCache: false,
-    };
+    return perfect;
   }
 
   buildPerfectCandidates(games) {
-    const cachedPerfect = Cache.read()?.steam?.perfectGamesAll ?? [];
-    const extraAppIds = [
-      ...this.extraPerfectAppIds,
-      ...cachedPerfect.map((game) => game.appId),
-    ];
     const byAppId = new Map();
 
     for (const game of games) {
       byAppId.set(game.appid, game);
     }
 
-    for (const appId of extraAppIds) {
+    for (const appId of this.extraPerfectAppIds) {
       if (!byAppId.has(appId)) {
         byAppId.set(appId, {
           appid: appId,
@@ -306,7 +240,6 @@ class SteamProvider {
           return { perfect: false, unlocked, total };
         }
 
-        let schemaTotal = 0;
         try {
           const schemaData = await this.apiGet('/ISteamUserStats/GetSchemaForGame/v2/', {
             appid: appId,
@@ -314,7 +247,7 @@ class SteamProvider {
           });
           const schemaAchievements = schemaData?.game?.availableGameStats?.achievements;
           if (Array.isArray(schemaAchievements) && schemaAchievements.length > 0) {
-            schemaTotal = schemaAchievements.length;
+            const schemaTotal = schemaAchievements.length;
             const unlockedByApiName = new Map(
               playerAchievements.map((entry) => [entry.apiname.toLowerCase(), isAchievementUnlocked(entry)]),
             );
