@@ -17,22 +17,12 @@ const ARYA_COLORS = ['#FF7EB6', '#F0A6C8'];
 const LEGEND_COLORS = ['#FFD700', '#FFA657'];
 const HEART_CORNER = { x: 780, y: 48 };
 
-const ZONES = [
-  { xMin: 16, xMax: 260, yMin: 16, yMax: 130 },
-  { xMin: 740, xMax: 984, yMin: 16, yMax: 130 },
-  { xMin: 16, xMax: 260, yMin: 530, yMax: 664 },
-  { xMin: 740, xMax: 984, yMin: 530, yMax: 664 },
-  { xMin: 16, xMax: 220, yMin: 200, yMax: 440 },
-  { xMin: 780, xMax: 984, yMin: 200, yMax: 440 },
-  { xMin: 320, xMax: 680, yMin: 16, yMax: 110 },
-  { xMin: 320, xMax: 680, yMin: 300, yMax: 460 },
-  { xMin: 320, xMax: 680, yMin: 520, yMax: 664 },
-];
+const CANVAS = { xMin: 24, xMax: 976, yMin: 18, yMax: 548 };
 
 class ButterflyRenderer {
   static render(seed = Date.now()) {
     const rng = new Random(seed);
-    const count = rng.int(8, 12);
+    const count = rng.int(4, 7);
     const seekerIndex = rng.int(0, count - 1);
     const nearMissIndex = rng.int(0, count - 1);
     const hasLegendary = rng.int(1, 20) === 1;
@@ -41,12 +31,11 @@ class ButterflyRenderer {
     const frontLayer = [];
 
     for (let i = 0; i < count; i += 1) {
-      const zone = ZONES[i % ZONES.length];
       const isSeeker = i === seekerIndex;
       const isNearMiss = i === nearMissIndex && !isSeeker;
       const butterfly = isNearMiss
-        ? this.createNearMissButterfly(rng, zone)
-        : this.createButterfly(rng, zone, { seeker: isSeeker });
+        ? this.createNearMissButterfly(rng)
+        : this.createButterfly(rng, { seeker: isSeeker });
 
       if (i % 2 === 0) {
         backLayer.push(butterfly);
@@ -60,7 +49,8 @@ class ButterflyRenderer {
     }
 
     const aryaPath = this.heartCornerPath(rng);
-    const aryaDuration = rng.int(52, 72);
+    // Original was 52–72s; a bit faster so she reaches home sooner
+    const aryaDuration = rng.int(38, 52);
     frontLayer.push(this.createAryaButterfly(rng, aryaPath, aryaDuration));
 
     const totalCount = count + 1 + (hasLegendary ? 1 : 0);
@@ -71,6 +61,7 @@ class ButterflyRenderer {
       count: totalCount,
       legendary: hasLegendary,
       aryaDuration,
+      aryaHomecomings: [0.92],
       showConstellation,
     };
   }
@@ -137,7 +128,7 @@ class ButterflyRenderer {
     `;
   }
 
-  static renderBeaconEffects(_duration, showConstellation) {
+  static renderBeaconEffects(showConstellation) {
     if (!showConstellation) {
       return '';
     }
@@ -147,12 +138,24 @@ class ButterflyRenderer {
     return `
       <g class="butterfly-trails" style="pointer-events:none">
         <g class="heart-constellation">
-          <line x1="${x - 28}" y1="${y + 12}" x2="${x}" y2="${y}" class="constellation-line" />
-          <line x1="${x}" y1="${y}" x2="${x + 24}" y2="${y - 16}" class="constellation-line" />
-          <line x1="${x + 24}" y1="${y - 16}" x2="${x + 38}" y2="${y + 8}" class="constellation-line" />
-          <circle cx="${x - 28}" cy="${y + 12}" r="1.2" class="constellation-node" />
-          <circle cx="${x + 24}" cy="${y - 16}" r="1.2" class="constellation-node" />
-          <circle cx="${x + 38}" cy="${y + 8}" r="1.2" class="constellation-node" />
+          <line x1="${x - 28}" y1="${y + 12}" x2="${x}" y2="${y}" class="constellation-line">
+            <animate attributeName="opacity" values="0.06;0.22;0.06" dur="4.8s" repeatCount="indefinite" />
+          </line>
+          <line x1="${x}" y1="${y}" x2="${x + 24}" y2="${y - 16}" class="constellation-line">
+            <animate attributeName="opacity" values="0.06;0.22;0.06" dur="4.8s" begin="0.4s" repeatCount="indefinite" />
+          </line>
+          <line x1="${x + 24}" y1="${y - 16}" x2="${x + 38}" y2="${y + 8}" class="constellation-line">
+            <animate attributeName="opacity" values="0.06;0.22;0.06" dur="4.8s" begin="0.8s" repeatCount="indefinite" />
+          </line>
+          <circle cx="${x - 28}" cy="${y + 12}" r="1.2" class="constellation-node">
+            <animate attributeName="opacity" values="0.1;0.55;0.1" dur="4.8s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="${x + 24}" cy="${y - 16}" r="1.2" class="constellation-node">
+            <animate attributeName="opacity" values="0.1;0.55;0.1" dur="4.8s" begin="0.4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="${x + 38}" cy="${y + 8}" r="1.2" class="constellation-node">
+            <animate attributeName="opacity" values="0.1;0.55;0.1" dur="4.8s" begin="0.8s" repeatCount="indefinite" />
+          </circle>
         </g>
       </g>
     `;
@@ -189,13 +192,25 @@ class ButterflyRenderer {
     `;
   }
 
+  static heartCornerPath(rng) {
+    const startX = rng.int(120, 280);
+    const startY = rng.int(480, 640);
+    const midX = rng.int(420, 620);
+    const midY = rng.int(220, 360);
+    const { x, y } = HEART_CORNER;
+
+    return [
+      `M ${startX} ${startY}`,
+      `C ${startX + 80} ${startY - 120}, ${midX} ${midY}, ${x - 40} ${y + 20}`,
+      `C ${x - 10} ${y - 10}, ${x + 20} ${y}, ${x} ${y}`,
+    ].join(' ');
+  }
+
   static createLegendaryButterfly(rng) {
     const [colorA, colorB] = LEGEND_COLORS;
-    const zone = ZONES[rng.int(0, ZONES.length - 1)];
     const scale = rng.float(0.9, 1.15);
-    const duration = rng.int(28, 38);
     const flap = rng.float(0.55, 0.75).toFixed(2);
-    const path = this.zonePath(rng, zone);
+    const { path, duration } = this.endlessWander(rng, { waypoints: rng.int(22, 32), speed: 0.09 });
 
     return `
       <g class="butterfly butterfly-legendary" opacity="0.62">
@@ -221,14 +236,17 @@ class ButterflyRenderer {
     `;
   }
 
-  static createNearMissButterfly(rng, zone) {
+  static createNearMissButterfly(rng) {
     const colorA = PALETTE[rng.int(0, PALETTE.length - 1)];
     const colorB = PALETTE[rng.int(0, PALETTE.length - 1)];
     const scale = rng.float(0.7, 1.05);
-    const duration = rng.int(38, 56);
     const flap = rng.float(0.75, 1.05).toFixed(2);
     const opacity = rng.float(0.28, 0.48).toFixed(2);
-    const path = this.nearMissPath(rng, zone);
+    const { path, duration } = this.endlessWander(rng, {
+      waypoints: rng.int(20, 28),
+      speed: 0.1,
+      nearMiss: true,
+    });
 
     return `
       <g class="butterfly butterfly-nearmiss" opacity="${opacity}">
@@ -253,43 +271,18 @@ class ButterflyRenderer {
     `;
   }
 
-  static nearMissPath(rng, zone) {
-    const { x, y } = HEART_CORNER;
-    const startX = rng.int(zone.xMin, zone.xMax);
-    const startY = rng.int(zone.yMin, zone.yMax);
-    const endX = rng.int(zone.xMin, zone.xMax);
-    const endY = rng.int(zone.yMin, zone.yMax);
-
-    return [
-      `M ${startX} ${startY}`,
-      `C ${rng.int(500, 700)} ${rng.int(80, 180)}, ${x + rng.int(-20, 20)} ${y + rng.int(-8, 8)}, ${x + rng.int(-35, 35)} ${y + rng.int(10, 30)}`,
-      `C ${x + rng.int(40, 80)} ${y + rng.int(40, 80)}, ${endX} ${endY}, ${endX} ${endY}`,
-    ].join(' ');
-  }
-
-  static heartCornerPath(rng) {
-    const startX = rng.int(120, 280);
-    const startY = rng.int(480, 640);
-    const midX = rng.int(420, 620);
-    const midY = rng.int(220, 360);
-    const { x, y } = HEART_CORNER;
-
-    return [
-      `M ${startX} ${startY}`,
-      `C ${startX + 80} ${startY - 120}, ${midX} ${midY}, ${x - 40} ${y + 20}`,
-      `C ${x - 10} ${y - 10}, ${x + 20} ${y}, ${x} ${y}`,
-    ].join(' ');
-  }
-
-  static createButterfly(rng, zone, options = {}) {
+  static createButterfly(rng, options = {}) {
     const { seeker = false } = options;
     const colorA = seeker ? ARYA_COLORS[0] : PALETTE[rng.int(0, PALETTE.length - 1)];
     const colorB = seeker ? PALETTE[rng.int(0, PALETTE.length - 1)] : PALETTE[rng.int(0, PALETTE.length - 1)];
     const scale = rng.float(0.65, 1.25);
-    const duration = rng.int(42, 68);
     const flap = rng.float(0.7, 1.2).toFixed(2);
     const opacity = rng.float(0.35, 0.72).toFixed(2);
-    const path = this.zonePath(rng, zone);
+    const { path, duration } = this.endlessWander(rng, {
+      waypoints: rng.int(18, 30),
+      speed: rng.float(0.08, 0.12),
+      seeker,
+    });
     const seekerClass = seeker ? ' butterfly-seeker' : '';
 
     return `
@@ -316,23 +309,86 @@ class ButterflyRenderer {
     `;
   }
 
-  static zonePath(rng, zone) {
-    const segments = rng.int(4, 6);
-    let x = rng.int(zone.xMin, zone.xMax);
-    let y = rng.int(zone.yMin, zone.yMax);
-    const points = [`M ${x} ${y}`];
+  /** Long canvas-wide wander that closes on itself — no visible teleport reset. */
+  static endlessWander(rng, options = {}) {
+    const waypoints = options.waypoints ?? rng.int(18, 28);
+    const speed = options.speed ?? 0.1;
+    const start = this.randomCanvasPoint(rng);
+    const points = [start];
+    let x = start.x;
+    let y = start.y;
+    let weight = 0;
 
-    for (let i = 0; i < segments; i += 1) {
-      const cx1 = rng.int(zone.xMin, zone.xMax);
-      const cy1 = rng.int(zone.yMin, zone.yMax);
-      const cx2 = rng.int(zone.xMin, zone.xMax);
-      const cy2 = rng.int(zone.yMin, zone.yMax);
-      x = rng.int(zone.xMin, zone.xMax);
-      y = rng.int(zone.yMin, zone.yMax);
-      points.push(`C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x} ${y}`);
+    for (let i = 0; i < waypoints; i += 1) {
+      let next;
+      if (options.nearMiss && i > 0 && i % rng.int(5, 8) === 0) {
+        next = {
+          x: HEART_CORNER.x + rng.int(-55, 55),
+          y: HEART_CORNER.y + rng.int(12, 48),
+        };
+      } else if (options.seeker && rng.int(1, 6) === 1) {
+        next = {
+          x: HEART_CORNER.x + rng.int(-120, 80),
+          y: HEART_CORNER.y + rng.int(20, 160),
+        };
+        next = this.clampPoint(next);
+      } else {
+        next = this.randomCanvasPoint(rng);
+      }
+
+      points.push(next);
+      weight += this.dist(x, y, next.x, next.y);
+      x = next.x;
+      y = next.y;
     }
 
-    return points.join(' ');
+    // Close the loop back to start without a jump
+    points.push(start);
+    weight += this.dist(x, y, start.x, start.y);
+
+    const commands = [`M ${start.x} ${start.y}`];
+    for (let i = 1; i < points.length; i += 1) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      commands.push(this.organicCurve(rng, prev.x, prev.y, curr.x, curr.y));
+    }
+
+    const duration = Math.round(Math.max(140, Math.min(320, weight * speed)));
+
+    return { path: commands.join(' '), duration };
+  }
+
+  static organicCurve(rng, x1, y1, x2, y2) {
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    const spread = Math.max(20, Math.round(Math.min(160, this.dist(x1, y1, x2, y2) * 0.45)));
+    const c1 = this.clampPoint({
+      x: Math.round(mx) + rng.int(-spread, spread),
+      y: Math.round(my) + rng.int(-spread, spread),
+    });
+    const c2 = this.clampPoint({
+      x: Math.round(mx) + rng.int(-spread, spread),
+      y: Math.round(my) + rng.int(-spread, spread),
+    });
+    return `C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${Math.round(x2)} ${Math.round(y2)}`;
+  }
+
+  static randomCanvasPoint(rng) {
+    return {
+      x: rng.int(CANVAS.xMin, CANVAS.xMax),
+      y: rng.int(CANVAS.yMin, CANVAS.yMax),
+    };
+  }
+
+  static clampPoint(point) {
+    return {
+      x: Math.max(CANVAS.xMin, Math.min(CANVAS.xMax, Math.round(point.x))),
+      y: Math.max(CANVAS.yMin, Math.min(CANVAS.yMax, Math.round(point.y))),
+    };
+  }
+
+  static dist(x1, y1, x2, y2) {
+    return Math.hypot(x2 - x1, y2 - y1);
   }
 }
 

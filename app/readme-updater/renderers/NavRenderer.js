@@ -55,6 +55,7 @@ class NavRenderer {
     const heartbeatIntensity = this.computeHeartbeatIntensity(stats);
     const heartSync = this.renderHeartSync(markX, row1Y, {
       aryaDuration: sync.aryaDuration,
+      aryaHomecomings: sync.aryaHomecomings,
       romancePink: sync.romancePink,
     });
 
@@ -65,6 +66,7 @@ class NavRenderer {
         <text x="${rightX}" y="${headerY}" text-anchor="end" class="gaming-stats">${tagline}</text>
         <line x1="${padX}" y1="${dividerY}" x2="${rightX}" y2="${dividerY}" class="gaming-divider" />
 
+        ${heartSync.strike}
         <text y="${row1Y}" class="row">
           <tspan x="${padX}" class="keyColor">Kernel</tspan>
           <tspan x="${leftValX}" class="valueColor">ARYAOS v${version}</tspan>
@@ -96,20 +98,91 @@ class NavRenderer {
     `;
   }
 
-  static renderHeartSync(markX, _rowY, sync = {}) {
-    const { aryaDuration: duration, romancePink = '#ff7eb6' } = sync;
+  static renderHeartSync(markX, rowY, sync = {}) {
+    const { aryaDuration: duration, aryaHomecomings } = sync;
+    const heart = `<tspan x="${markX}" class="nav-romance heart-beacon">♥</tspan>`;
 
     if (!duration) {
-      return {
-        heart: `<tspan x="${markX}" class="nav-romance heart-beacon">♥</tspan>`,
-      };
+      return { heart, strike: '' };
     }
 
-    const fillValues = `${romancePink};${romancePink};#ffd700;#fff4a3;#ffd700;${romancePink}`;
-
     return {
-      heart: `<tspan x="${markX}" class="nav-romance heart-beacon">♥<animate attributeName="fill" values="${fillValues}" keyTimes="0;0.84;0.88;0.92;0.95;1" dur="${duration}s" repeatCount="indefinite" /></tspan>`,
+      heart,
+      strike: this.renderRomanceHomecomingStrike(rowY, duration, aryaHomecomings),
     };
+  }
+
+  static renderRomanceHomecomingStrike(rowY, duration, homecomings = null) {
+    const x1 = NAV.rightKeyX;
+    const x2 = 848;
+    const lineY = rowY + 3;
+    const bandY = rowY - 12;
+    const bandH = 18;
+    const dur = `${duration}s`;
+    const arrivals = (Array.isArray(homecomings) && homecomings.length ? homecomings : [0.92])
+      .map((t) => Math.max(0.04, Math.min(0.96, Number(t) || 0.92)))
+      .sort((a, b) => a - b);
+
+    const keyTimes = ['0'];
+    const sheenValues = ['0'];
+    const lineOpacity = ['0'];
+    const tipOpacity = ['0'];
+    const x2Values = [String(x1)];
+    const cxValues = [String(x1)];
+    const rValues = ['1.2'];
+    let last = 0;
+
+    for (const t of arrivals) {
+      let appear = Math.max(last + 0.002, t - 0.018);
+      let peak = Math.max(appear + 0.002, t);
+      let settle = Math.max(peak + 0.002, Math.min(0.997, t + 0.028));
+      if (settle >= 0.998) {
+        break;
+      }
+      keyTimes.push(appear.toFixed(4), peak.toFixed(4), settle.toFixed(4));
+      sheenValues.push('0', '0.65', '0');
+      lineOpacity.push('0', '0.92', '0');
+      tipOpacity.push('0', '1', '0');
+      x2Values.push(String(x1), String(x2), String(x2));
+      cxValues.push(String(x1), String(x2), String(x2));
+      rValues.push('1.2', '2.4', '1.2');
+      last = settle;
+    }
+
+    keyTimes.push('1');
+    sheenValues.push('0');
+    lineOpacity.push('0');
+    tipOpacity.push('0');
+    x2Values.push(String(x1));
+    cxValues.push(String(x1));
+    rValues.push('1.2');
+
+    const kt = keyTimes.join(';');
+
+    return `
+      <g class="romance-homecoming" style="pointer-events:none">
+        <defs>
+          <linearGradient id="homecoming-sheen" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFD700" stop-opacity="0" />
+            <stop offset="42%" stop-color="#FFF4A3" stop-opacity="0.5" />
+            <stop offset="58%" stop-color="#FFD700" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <rect x="${x1}" y="${bandY}" width="${x2 - x1}" height="${bandH}" rx="4" fill="url(#homecoming-sheen)" opacity="0">
+          <animate attributeName="opacity" values="${sheenValues.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+        </rect>
+        <line x1="${x1}" y1="${lineY}" x2="${x1}" y2="${lineY}" class="romance-strike-line" stroke="#FFD700" stroke-width="1.2" stroke-linecap="round" opacity="0">
+          <animate attributeName="x2" values="${x2Values.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="${lineOpacity.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+        </line>
+        <circle cx="${x1}" cy="${lineY}" r="2.1" fill="#FFF4A3" opacity="0">
+          <animate attributeName="cx" values="${cxValues.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="${tipOpacity.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+          <animate attributeName="r" values="${rValues.join(';')}" keyTimes="${kt}" dur="${dur}" repeatCount="indefinite" />
+        </circle>
+      </g>
+    `;
   }
 
   static renderSteamStatus(steam = {}, word3X) {
@@ -129,14 +202,16 @@ class NavRenderer {
   static computeHeartbeatIntensity(stats = {}) {
     const streak = stats.currentStreak ?? stats.raw?.currentStreak ?? 0;
     const today = stats.todayContributions ?? 0;
+    const inGame = stats.steam?.presence?.state === 'in-game';
 
-    if (streak === 0 && today === 0) {
+    if (streak === 0 && today === 0 && !inGame) {
       return 0.18;
     }
 
     const streakBoost = Math.min(streak / 21, 0.45);
     const todayBoost = Math.min(today / 8, 0.35);
-    return Math.min(1, 0.28 + streakBoost + todayBoost);
+    const playBoost = inGame ? 0.22 : 0;
+    return Math.min(1, 0.28 + streakBoost + todayBoost + playBoost);
   }
 
   static renderRomanceCorner(romance = {}) {

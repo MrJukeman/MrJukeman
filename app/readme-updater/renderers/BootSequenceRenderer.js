@@ -29,7 +29,9 @@ class BootSequenceRenderer {
       steps.push(BUTTERFLY_HINT_STEPS[3](ctx));
     }
 
-    steps.push(...BUTTERFLY_HINT_STEPS.filter((_, index) => index !== 3));
+    steps.push(
+      ...BUTTERFLY_HINT_STEPS.filter((_, index) => index !== 3).map((build) => build(ctx)),
+    );
 
     const index = rng.int(0, steps.length - 1);
     return this.escapeXml(steps[index]);
@@ -37,11 +39,16 @@ class BootSequenceRenderer {
 
   static createContext(context) {
     let tick = 0;
+    const playing = context.steamPlaying || null;
     return {
       username: context.username || 'operator',
       butterflyCount: context.butterflyCount ?? 0,
       perfectTotal: context.perfectTotal ?? 0,
-      steamLabel: context.steamOnline ? 'Online' : 'Offline',
+      steamLabel: playing
+        ? `Playing ${playing}`
+        : context.steamOnline
+          ? 'Online'
+          : 'Offline',
       wallpaperId: context.wallpaperId || '0x00',
       ms(value) {
         tick = value;
