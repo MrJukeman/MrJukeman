@@ -138,14 +138,6 @@
 .crew-name-idle {
   fill: #656d76;
 }
-.sparkline {
-  stroke: #bf3989;
-  stroke-width: 1.2;
-  opacity: 0.85;
-}
-.sparkline-dot {
-  fill: #bf3989;
-}
 .achievement-toast {
   fill: #bf3989;
 }
@@ -447,10 +439,6 @@
         <tspan x="538" class="keyColor">Contrib</tspan><tspan x="662" class="valueColor">4.2K</tspan><tspan class="addColor"> (+13)</tspan>
         <tspan x="810" class="keyColor">Pulse</tspan><tspan x="890" class="delColor">▼ 48%</tspan>
       </text>
-      
-      <polyline points="718.0,342.8 722.7,344.0 727.3,344.0 732.0,344.0 736.7,344.0 741.3,344.0 746.0,336.0" class="sparkline" fill="none" />
-      <circle cx="746.0" cy="336.0" r="1.4" class="sparkline-dot" />
-    
       <text y="366" class="row">
         <tspan x="538" class="keyColor">LOC Delta</tspan><tspan x="662" class="valueColor">4.1M</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+3.7M</tspan><tspan class="dim">/</tspan><tspan class="delColor">-386K</tspan><tspan class="dim">)</tspan>
       </text>
@@ -512,7 +500,15 @@
           <rect x="760" y="485" width="148" height="5" rx="2" class="game-bar-bg" />
           
           <text x="914" y="493" class="game-ach-count">—</text>
-        <line x1="372" y1="507" x2="948" y2="507" class="gaming-divider" /><text x="372" y="520" class="gaming-trophy"><tspan class="game-trophy-label">TROPHY CASE</tspan><tspan class="muted" dx="10">·</tspan><tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">Among Us</tspan><tspan class="game-trophy-perfect" dx="4">33/33 Perfect</tspan><tspan class="muted" dx="8">·</tspan><tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">Assassin's Creed …</tspan><tspan class="game-trophy-perfect" dx="4">75/75 Perfect</tspan><tspan class="muted" dx="8">·</tspan><tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">Ghost of Tsushima…</tspan><tspan class="game-trophy-perfect" dx="4">77/77 Perfect</tspan></text>
+        <line x1="372" y1="507" x2="948" y2="507" class="gaming-divider" /><text x="372" y="520" class="gaming-trophy"><tspan class="game-trophy-label">TROPHY CASE</tspan><tspan class="muted" dx="10">·</tspan></text><defs><clipPath id="trophy-case-clip"><rect x="490" y="508" width="458" height="18" /></clipPath></defs>
+      <g clip-path="url(#trophy-case-clip)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" from="0 0" to="-722.8 0" dur="32.5s" repeatCount="indefinite" />
+          <text x="490.0" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Among Us</tspan><tspan class="game-trophy-perfect" dx="4">33/33 Perfect</tspan></text><text x="628.3" y="520" class="gaming-trophy muted">·</text><text x="650.3" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Assassin's Creed Shadows</tspan><tspan class="game-trophy-perfect" dx="4">75/75 Perfect</tspan></text><text x="885.3" y="520" class="gaming-trophy muted">·</text><text x="907.3" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Ghost of Tsushima DIRECTOR'S CUT</tspan><tspan class="game-trophy-perfect" dx="4">77/77 Perfect</tspan></text><text x="1190.8" y="520" class="gaming-trophy muted">·</text>
+          <text x="1212.8" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Among Us</tspan><tspan class="game-trophy-perfect" dx="4">33/33 Perfect</tspan></text><text x="1351.0" y="520" class="gaming-trophy muted">·</text><text x="1373.0" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Assassin's Creed Shadows</tspan><tspan class="game-trophy-perfect" dx="4">75/75 Perfect</tspan></text><text x="1608.0" y="520" class="gaming-trophy muted">·</text><text x="1630.0" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Ghost of Tsushima DIRECTOR'S CUT</tspan><tspan class="game-trophy-perfect" dx="4">77/77 Perfect</tspan></text><text x="1913.5" y="520" class="gaming-trophy muted">·</text>
+        </g>
+      </g>
+    
     
 
   <text x="28" y="558" class="footer">build 44604d2 · synced 07/22/2026, 14:55:47 NPT · (ctx) =&gt; `[${ctx.ms(55)}] migration route … Heart.Corner lock acquired` · <tspan class="cursor">█</tspan></text>
