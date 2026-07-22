@@ -92,7 +92,9 @@ const L = {
     padX: 56,
     pidX: 56,
     loadX: 112,
-    nameX: 180,
+    loadBarX: 148,
+    loadBarW: 28,
+    nameX: 186,
     get rightX() {
       return L.col3a + L.col3w - 24;
     },
@@ -145,11 +147,13 @@ class SvgUpdater {
     const butterflies = ButterflyRenderer.render(seed);
     const wallpaper = WallpaperRenderer.render(daySeed);
     const bottomPanels = this.renderBottomPanels(config, stats);
+    const playingName = stats.steam?.presence?.state === 'in-game' ? stats.steam.presence.gameName : null;
     const bootLine = BootSequenceRenderer.render(seed, {
       username,
       butterflyCount: butterflies.count,
       perfectTotal: stats.steam?.perfectTotal ?? 0,
       steamOnline: stats.steam?.status === 'online',
+      steamPlaying: playingName ? this.truncate(playingName, 18) : null,
       wallpaperId: wallpaper.wallpaperId,
       legendary: butterflies.legendary,
     });
@@ -160,7 +164,17 @@ class SvgUpdater {
     for (const theme of config.themes) {
       const [accentA, accentB] = THEME_ACCENTS[theme] || THEME_ACCENTS.dark;
       const romancePink = HEART_ROMANCE[theme] || HEART_ROMANCE.dark;
-      const panels = this.renderTopPanels(config, stats, age, syncTime, username, butterflies, romancePink);
+      const panels = this.renderTopPanels(
+        config,
+        stats,
+        age,
+        syncTime,
+        username,
+        butterflies,
+        romancePink,
+        meta,
+        accentA,
+      );
       const trails = ButterflyRenderer.renderBeaconEffects(butterflies.showConstellation);
       const replacements = {
         '{css}': cssByTheme[theme],
@@ -212,10 +226,12 @@ class SvgUpdater {
     return `<text y="${y}" class="row"><tspan x="${keyX}" class="keyColor">${key}</tspan>${valueMarkup}</text>`;
   }
 
-  static renderTopPanels(config, stats, age, syncTime, username, butterflies, romancePink) {
+  static renderTopPanels(config, stats, age, syncTime, username, butterflies, romancePink, meta = {}, accent = '#ffa657') {
     return `
+      ${this.renderAchievementCeremony(meta.newAchievement, accent)}
       ${NavRenderer.render(config, stats, username, {
         aryaDuration: butterflies.aryaDuration,
+        aryaHomecomings: butterflies.aryaHomecomings,
         romancePink,
       })}
       ${this.panel(L.x1, L.topRowY, L.colW, L.topRowH)}
@@ -226,6 +242,28 @@ class SvgUpdater {
       ${this.renderRuntimePanel(config, stats, syncTime)}
       ${this.renderArsenalPanel(config)}
       ${this.renderSignalPanel(stats)}
+    `;
+  }
+
+  static renderAchievementCeremony(achievement, accent = '#ffa657') {
+    if (!achievement) {
+      return '';
+    }
+
+    const label = this.escapeXml(achievement);
+    return `
+      <g class="achievement-ceremony" style="pointer-events:none">
+        <rect x="20" y="6" width="960" height="${L.svgHeight - 12}" rx="18" fill="none" stroke="${accent}" stroke-width="1.4" opacity="0">
+          <animate attributeName="opacity" values="0;0.75;0.2;0.55;0" keyTimes="0;0.1;0.4;0.65;1" dur="3.6s" fill="freeze" />
+        </rect>
+        <rect x="28" y="14" width="944" height="82" rx="10" fill="${accent}" opacity="0">
+          <animate attributeName="opacity" values="0;0.12;0.04;0.1;0" keyTimes="0;0.12;0.45;0.7;1" dur="3.6s" fill="freeze" />
+        </rect>
+        <text x="500" y="58" text-anchor="middle" class="achievement-banner" opacity="0">
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.72;1" dur="3.6s" fill="freeze" />
+          ★ ACHIEVEMENT UNLOCKED · ${label}
+        </text>
+      </g>
     `;
   }
 
@@ -351,10 +389,28 @@ class SvgUpdater {
     }
 
     const dataRows = rows
-      .map(
-        (lang, i) =>
-          `<text y="${p.rowStartY + i * p.rowStep}" class="mono"><tspan x="${p.pidX}" class="keyColor">${lang.pid}</tspan><tspan x="${p.loadX}" class="valueColor">${String(lang.cpu).padStart(2)}%</tspan><tspan x="${p.nameX}">${this.escapeXml(lang.name)}</tspan></text>`,
-      )
+      .map((lang, i) => {
+        const rowY = p.rowStartY + i * p.rowStep;
+        const barY = rowY - 8;
+        const cpu = Math.max(0, Math.min(100, Number(lang.cpu) || 0));
+        const fillW = Math.max(cpu > 0 ? 2 : 0, Math.round((p.loadBarW * cpu) / 100));
+        const pulse =
+          i === 0
+            ? `<animate attributeName="opacity" values="0.75;1;0.75" dur="2.4s" repeatCount="indefinite" />`
+            : '';
+
+        return `
+          <text y="${rowY}" class="mono">
+            <tspan x="${p.pidX}" class="keyColor">${lang.pid}</tspan>
+            <tspan x="${p.loadX}" class="valueColor">${String(cpu).padStart(2)}%</tspan>
+            <tspan x="${p.nameX}">${this.escapeXml(lang.name)}</tspan>
+          </text>
+          <rect x="${p.loadBarX}" y="${barY}" width="${p.loadBarW}" height="5" rx="1.5" class="proc-bar-bg" />
+          <rect x="${p.loadBarX}" y="${barY}" width="${fillW}" height="5" rx="1.5" class="proc-bar-fill">
+            ${pulse}
+          </rect>
+        `;
+      })
       .join('');
 
     return header + dataRows;
@@ -364,18 +420,23 @@ class SvgUpdater {
     const g = L.gaming;
     const barTrackW = 148;
     const profileUrl = steam.profileUrl || 'https://steamcommunity.com/id/MrJukeman';
-    const title = config.steam?.panelTitle || 'GAMING.DOCK';
+    const presence = steam.presence || {};
+    const inGame = presence.state === 'in-game' && Boolean(presence.gameName);
+    const title = inGame ? 'NOW.PLAYING' : config.steam?.panelTitle || 'GAMING.DOCK';
+    const titleClass = inGame ? 'section-label link game-live-label' : 'section-label link';
     const perfectTotal = steam.perfectTotal ?? steam.perfectGames?.length ?? 0;
     const totalHours = steam.totalPlaytimeHours || null;
-    const statsLine = totalHours
-      ? `${totalHours}h logged · ${perfectTotal} perfect`
-      : `${perfectTotal} perfect games`;
+    const statsLine = inGame
+      ? this.truncate(presence.gameName, 28)
+      : totalHours
+        ? `${totalHours}h logged · ${perfectTotal} perfect`
+        : `${perfectTotal} perfect games`;
 
     const header = `
       <a href="${profileUrl}">
-        <text x="${g.padX}" y="${g.headerY}" class="section-label link">◈ ${title}</text>
+        <text x="${g.padX}" y="${g.headerY}" class="${titleClass}">◈ ${title}</text>
       </a>
-      <text x="${g.rightX}" y="${g.headerY}" text-anchor="end" class="gaming-stats">${statsLine}</text>
+      <text x="${g.rightX}" y="${g.headerY}" text-anchor="end" class="gaming-stats">${this.escapeXml(statsLine)}</text>
       <line x1="${g.padX}" y1="${g.dividerY}" x2="${g.rightX}" y2="${g.dividerY}" class="gaming-divider" />
       <text y="${g.colsY}" class="muted">
         <tspan x="${g.padX}">#</tspan>
@@ -385,7 +446,7 @@ class SvgUpdater {
       </text>
     `;
 
-    const games = this.resolveDockGames(steam).slice(0, config.steam?.displayCount ?? 3);
+    const games = this.resolveDockGames(steam, config.steam?.displayCount ?? 3);
 
     if (!games.length) {
       const hint =
@@ -399,27 +460,38 @@ class SvgUpdater {
       .map((game, index) => {
         const rowY = g.rowStartY + index * g.rowStep;
         const barY = rowY - 8;
-        const rank = String(index + 1).padStart(2, '0');
-        const titleText = this.truncate(game.name, 32);
+        const live = Boolean(game.live);
+        const rank = live ? '▶' : String(index + 1).padStart(2, '0');
+        const titleText = this.truncate(game.name, live ? 30 : 32);
+        const hoursLabel = game.hours == null || game.hours === '—' ? '—' : `${game.hours}h`;
         const unlocked = game.achievementsUnlocked ?? 0;
         const total = game.achievementsTotal ?? 0;
         const hasAchievements = total > 0;
         const barPercent = hasAchievements ? Math.max(4, Math.round((unlocked / total) * 100)) : 0;
         const barWidth = hasAchievements ? Math.round((barTrackW * barPercent) / 100) : 0;
         const countLabel = hasAchievements ? `${unlocked}/${total}` : '—';
+        const rowOpacity = inGame && !live ? '0.42' : '1';
+        const titleClassName = live ? 'game-title game-title-live' : 'game-title';
+        const rankClass = live ? 'game-rank game-rank-live' : 'game-rank';
         const barFill = hasAchievements
-          ? `<rect x="${g.barX}" y="${barY}" width="${barWidth}" height="5" rx="2" class="game-bar-fill" />`
+          ? `<rect x="${g.barX}" y="${barY}" width="${barWidth}" height="5" rx="2" class="${live ? 'game-bar-fill game-bar-live' : 'game-bar-fill'}">${
+              live
+                ? '<animate attributeName="opacity" values="0.65;1;0.65" dur="1.6s" repeatCount="indefinite" />'
+                : ''
+            }</rect>`
           : '';
 
         return `
-          <text y="${rowY}" class="gaming-row">
-            <tspan x="${g.padX}" class="game-rank">${rank}</tspan>
-            <tspan x="${g.padX + 28}" class="game-title">${this.escapeXml(titleText)}</tspan>
-            <tspan x="${g.hoursX}" class="game-hours">${game.hours}h</tspan>
-          </text>
-          <rect x="${g.barX}" y="${barY}" width="${barTrackW}" height="5" rx="2" class="game-bar-bg" />
-          ${barFill}
-          <text x="${g.barX + barTrackW + 6}" y="${rowY}" class="game-ach-count">${countLabel}</text>
+          <g opacity="${rowOpacity}">
+            <text y="${rowY}" class="gaming-row">
+              <tspan x="${g.padX}" class="${rankClass}">${rank}</tspan>
+              <tspan x="${g.padX + 28}" class="${titleClassName}">${this.escapeXml(titleText)}</tspan>
+              <tspan x="${g.hoursX}" class="game-hours">${hoursLabel}</tspan>
+            </text>
+            <rect x="${g.barX}" y="${barY}" width="${barTrackW}" height="5" rx="2" class="game-bar-bg" />
+            ${barFill}
+            <text x="${g.barX + barTrackW + 6}" y="${rowY}" class="game-ach-count">${countLabel}</text>
+          </g>
         `;
       })
       .join('');
@@ -438,13 +510,49 @@ class SvgUpdater {
     return header + rows + footer;
   }
 
-  static resolveDockGames(steam) {
-    if (steam.dockGames?.length) {
-      return steam.dockGames;
+  static isPlayingGame(game, presence = {}) {
+    if (presence.state !== 'in-game') {
+      return false;
+    }
+    if (presence.gameId && game.appId != null && String(game.appId) === String(presence.gameId)) {
+      return true;
+    }
+    if (!presence.gameName || !game.name) {
+      return false;
+    }
+    const live = presence.gameName.toLowerCase();
+    const name = game.name.toLowerCase();
+    return name.includes(live) || live.includes(name.slice(0, Math.min(14, name.length)));
+  }
+
+  static resolveDockGames(steam, displayCount = 3) {
+    const presence = steam.presence || {};
+    const inGame = presence.state === 'in-game' && Boolean(presence.gameName);
+    let games = steam.dockGames?.length
+      ? [...steam.dockGames]
+      : (() => {
+          const perfectIds = new Set((steam.perfectGames || []).map((game) => game.appId));
+          return (steam.topGames || []).filter((game) => !perfectIds.has(game.appId));
+        })();
+
+    if (inGame) {
+      const matchIndex = games.findIndex((game) => this.isPlayingGame(game, presence));
+      if (matchIndex >= 0) {
+        const [match] = games.splice(matchIndex, 1);
+        games.unshift({ ...match, live: true });
+      } else {
+        games.unshift({
+          appId: presence.gameId || null,
+          name: presence.gameName,
+          hours: '—',
+          achievementsUnlocked: 0,
+          achievementsTotal: 0,
+          live: true,
+        });
+      }
     }
 
-    const perfectIds = new Set((steam.perfectGames || []).map((game) => game.appId));
-    return (steam.topGames || []).filter((game) => !perfectIds.has(game.appId));
+    return games.slice(0, displayCount);
   }
 
   static trophyEntryMeta(game, maxNameChars = 36) {
@@ -518,7 +626,7 @@ class SvgUpdater {
 
   static renderFooter(syncTime, commitHash, bootLine, achievement = null) {
     const achievementPart = achievement
-      ? `<tspan class="achievement-toast">achievement unlocked: ${this.escapeXml(achievement)} · </tspan>`
+      ? `<tspan class="achievement-toast">achievement unlocked: ${this.escapeXml(achievement)} · <animate attributeName="opacity" values="0.55;1;0.55" dur="1.4s" repeatCount="indefinite" /></tspan>`
       : '';
     return `${achievementPart}build ${commitHash} · synced ${syncTime} NPT · ${bootLine} · <tspan class="cursor">█</tspan>`;
   }
