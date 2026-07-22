@@ -507,7 +507,7 @@ class SvgUpdater {
       ? `<line x1="${g.padX}" y1="${g.trophyDividerY}" x2="${g.rightX}" y2="${g.trophyDividerY}" class="gaming-divider" />${trophyLine}`
       : '';
 
-    return header + rows + footer;
+    return `<!-- gaming-dock:start -->${header}${rows}${footer}<!-- gaming-dock:end -->`;
   }
 
   static isPlayingGame(game, presence = {}) {

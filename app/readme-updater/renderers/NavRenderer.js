@@ -88,7 +88,7 @@ class NavRenderer {
           <tspan x="${dot1X}" class="dim">·</tspan>
           <tspan x="${word2X}" class="valueColor">GitHub</tspan>
           <tspan x="${dot2X}" class="dim">·</tspan>
-          ${steamStatus}
+          <!-- steam-uplink:start -->${steamStatus}<!-- steam-uplink:end -->
           <tspan x="${dot3X}" class="dim">·</tspan>
           <tspan x="${word4X}" class="dim">${hash}</tspan>
         </text>

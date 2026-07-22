@@ -4,7 +4,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "presence": "node presence.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
