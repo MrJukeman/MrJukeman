@@ -2,6 +2,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import Statistics from './app/readme-updater/Statistics.js';
 import SvgUpdater from './app/readme-updater/SvgUpdater.js';
+import PresenceUpdater from './app/readme-updater/PresenceUpdater.js';
 import { getNptTimestamp } from './helpers/functions.js';
 
 dotenv.config();
@@ -23,8 +24,8 @@ function resolveCredentials() {
   return { username: username.trim(), accessToken: accessToken.trim() };
 }
 
-function writeSyncMetadata() {
-  const payload = { date: new Date().toISOString(), npt: getNptTimestamp() };
+function writeSyncMetadata(extra = {}) {
+  const payload = { date: new Date().toISOString(), npt: getNptTimestamp(), ...extra };
   fs.mkdirSync('dist', { recursive: true });
   fs.writeFileSync('dist/date.json', JSON.stringify(payload, null, 2));
 }
@@ -49,6 +50,7 @@ function writeSyncMetadata() {
   SvgUpdater.updateSVG(stats, username, {
     newAchievement: stats.newAchievement,
   });
-  writeSyncMetadata();
+  PresenceUpdater.writeSteamCache(stats.steam || {});
+  writeSyncMetadata({ presence: stats.steam?.presence || null });
   console.log(`AryaOS SVG kernel rebuilt successfully for @${username}.`);
 })();

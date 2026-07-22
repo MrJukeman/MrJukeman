@@ -81,6 +81,36 @@ class SteamProvider {
     }
   }
 
+  /** Lightweight presence-only fetch for frequent README uplinks. */
+  async collectPresence() {
+    if (!this.isConfigured()) {
+      return {
+        status: 'offline',
+        profileUrl: this.profileUrl,
+        presence: { state: 'offline', gameName: null },
+        message: 'steam api not configured',
+      };
+    }
+
+    try {
+      const steamId = await this.resolveSteamId();
+      const presence = await this.fetchPresence(steamId);
+      return {
+        status: 'online',
+        profileUrl: this.profileUrl,
+        presence,
+      };
+    } catch (error) {
+      console.warn('Steam presence error:', error.message || error);
+      return {
+        status: 'offline',
+        profileUrl: this.profileUrl,
+        presence: { state: 'offline', gameName: null },
+        message: error.message || 'steam unavailable',
+      };
+    }
+  }
+
   offlinePayload(message) {
     return {
       status: 'offline',
