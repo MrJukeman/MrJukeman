@@ -38,7 +38,6 @@ class SteamProvider {
       config.steam?.profileUrl || `https://steamcommunity.com/id/${this.vanityUrl}/games/?tab=perfect`;
     this.topCount = config.steam?.topCount ?? 4;
     this.displayCount = config.steam?.displayCount ?? 3;
-    this.perfectCount = config.steam?.perfectCount ?? 4;
     this.extraPerfectAppIds = config.steam?.extraPerfectAppIds ?? [];
   }
 
@@ -71,7 +70,7 @@ class SteamProvider {
         profileUrl: this.profileUrl,
         topGames,
         dockGames,
-        perfectGames: perfectGames.slice(0, this.perfectCount),
+        perfectGames,
         perfectTotal: perfectGames.length,
         totalPlaytimeHours: formatPlaytime(totalPlaytimeMinutes),
         presence,
@@ -216,11 +215,13 @@ class SteamProvider {
           hours: formatPlaytime(game.playtime_forever),
           achievementsUnlocked: status.unlocked,
           achievementsTotal: status.total,
+          perfectedAt: status.perfectedAt || 0,
         });
       }
     });
 
-    perfect.sort((a, b) => a.name.localeCompare(b.name));
+    // Latest perfected first (by last achievement unlock time)
+    perfect.sort((a, b) => (b.perfectedAt || 0) - (a.perfectedAt || 0));
 
     return perfect;
   }
@@ -256,15 +257,20 @@ class SteamProvider {
 
         const playerAchievements = playerData?.playerstats?.achievements;
         if (!Array.isArray(playerAchievements) || playerAchievements.length === 0) {
-          return { perfect: false, unlocked: 0, total: 0 };
+          return { perfect: false, unlocked: 0, total: 0, perfectedAt: 0 };
         }
 
-        const unlocked = playerAchievements.filter(isAchievementUnlocked).length;
+        const unlockedEntries = playerAchievements.filter(isAchievementUnlocked);
+        const unlocked = unlockedEntries.length;
         const total = playerAchievements.length;
         const allPlayerUnlocked = unlocked === total;
+        const perfectedAt = unlockedEntries.reduce(
+          (latest, entry) => Math.max(latest, Number(entry.unlocktime) || 0),
+          0,
+        );
 
         if (!allPlayerUnlocked) {
-          return { perfect: false, unlocked, total };
+          return { perfect: false, unlocked, total, perfectedAt: 0 };
         }
 
         try {
@@ -282,27 +288,27 @@ class SteamProvider {
               (schemaEntry) => unlockedByApiName.get(schemaEntry.name.toLowerCase()) === true,
             );
             if (schemaPerfect) {
-              return { perfect: true, unlocked, total: schemaTotal };
+              return { perfect: true, unlocked, total: schemaTotal, perfectedAt };
             }
             if (unlocked >= schemaTotal) {
-              return { perfect: true, unlocked, total: schemaTotal };
+              return { perfect: true, unlocked, total: schemaTotal, perfectedAt };
             }
-            return { perfect: false, unlocked, total: schemaTotal };
+            return { perfect: false, unlocked, total: schemaTotal, perfectedAt: 0 };
           }
         } catch {
-          return { perfect: allPlayerUnlocked, unlocked, total };
+          return { perfect: allPlayerUnlocked, unlocked, total, perfectedAt };
         }
 
-        return { perfect: allPlayerUnlocked, unlocked, total };
+        return { perfect: allPlayerUnlocked, unlocked, total, perfectedAt };
       } catch {
         if (attempt === 3) {
-          return { perfect: false, unlocked: 0, total: 0 };
+          return { perfect: false, unlocked: 0, total: 0, perfectedAt: 0 };
         }
         await sleep(2 ** attempt * 400);
       }
     }
 
-    return { perfect: false, unlocked: 0, total: 0 };
+    return { perfect: false, unlocked: 0, total: 0, perfectedAt: 0 };
   }
 }
 

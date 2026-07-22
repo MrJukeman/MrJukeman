@@ -82,7 +82,6 @@ class GitHubProvider {
     const commitHash = this.getLatestCommitHash();
     const totalLinesChanged = locStats.totalAdditions + locStats.totalDeletions;
     const contributionDays = calendar.weeks.flatMap((week) => week.contributionDays);
-    const contributionSparkline = contributionDays.slice(-7).map((day) => day.contributionCount);
     const todayContributions = contributionDays.at(-1)?.contributionCount ?? 0;
     const crewMesh = await this.fetchCrewMesh();
 
@@ -102,7 +101,6 @@ class GitHubProvider {
       languages,
       kernelVersion: `6.${new Date().getFullYear()}.${calendar.totalContributions}`,
       commitHash,
-      contributionSparkline,
       todayContributions,
       crewMesh,
       raw: {
