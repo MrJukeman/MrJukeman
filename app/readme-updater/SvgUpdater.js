@@ -3,7 +3,6 @@ import ConfigLoader from './ConfigLoader.js';
 import ButterflyRenderer from './renderers/ButterflyRenderer.js';
 import BootSequenceRenderer from './renderers/BootSequenceRenderer.js';
 import NavRenderer, { NAV } from './renderers/NavRenderer.js';
-import SparklineRenderer from './renderers/SparklineRenderer.js';
 import WallpaperRenderer from './renderers/WallpaperRenderer.js';
 import { formatDelta, getAge, getNptTimestamp } from '../../helpers/functions.js';
 
@@ -295,8 +294,6 @@ class SvgUpdater {
     const firstRowY = labelY + PAD.labelToRow;
 
     const lastRowY = firstRowY + 3 * PAD.rowStep;
-    const sparkline = stats.contributionSparkline || [];
-    const contribSpark = SparklineRenderer.render(sparkline, 718, firstRowY + 2 * PAD.rowStep - 9);
 
     return `
       <text x="${k1}" y="${labelY}" class="section-label">◈ SIGNAL.FEED</text>
@@ -312,7 +309,6 @@ class SvgUpdater {
         <tspan x="${k1}" class="keyColor">Contrib</tspan><tspan x="${v1}" class="valueColor">${stats.totalContributions}</tspan><tspan class="addColor">${delta('totalContributions')}</tspan>
         <tspan x="${k2}" class="keyColor">Pulse</tspan><tspan x="${v2}" class="${trendClass}">${trendArrow} ${stats.velocityPercent}%</tspan>
       </text>
-      ${contribSpark}
       <text y="${lastRowY}" class="row">
         <tspan x="${k1}" class="keyColor">LOC Delta</tspan><tspan x="${v1}" class="valueColor">${stats.totalLinesChanged}</tspan><tspan class="dim"> (</tspan><tspan class="addColor">+${stats.totalAdditions}</tspan><tspan class="dim">/</tspan><tspan class="delColor">-${stats.totalDeletions}</tspan><tspan class="dim">)</tspan>
       </text>
@@ -428,7 +424,13 @@ class SvgUpdater {
       })
       .join('');
 
-    const trophyLine = this.renderTrophyLine(steam.perfectGames || [], g.padX, g.trophyY);
+    const trophyLine = this.renderTrophyLine(
+      steam.perfectGames || [],
+      g.padX,
+      g.trophyY,
+      g.rightX,
+      config.steam?.trophyScrollSeconds ?? 18,
+    );
     const footer = trophyLine
       ? `<line x1="${g.padX}" y1="${g.trophyDividerY}" x2="${g.rightX}" y2="${g.trophyDividerY}" class="gaming-divider" />${trophyLine}`
       : '';
@@ -445,24 +447,73 @@ class SvgUpdater {
     return (steam.topGames || []).filter((game) => !perfectIds.has(game.appId));
   }
 
-  static renderTrophyLine(perfectGames, x, y) {
+  static trophyEntryMeta(game, maxNameChars = 36) {
+    const total = game.achievementsTotal ?? 0;
+    const unlocked = game.achievementsUnlocked ?? total;
+    const name = this.truncate(game.name, maxNameChars);
+    const perfectLabel = total > 0 ? `${unlocked}/${total} Perfect` : 'Perfect';
+    const crownW = 11;
+    const gap = 4;
+    const nameW = name.length * 6.05;
+    const perfectW = perfectLabel.length * 5.45;
+    const width = crownW + gap + nameW + gap + perfectW;
+
+    return {
+      name,
+      perfectLabel,
+      width,
+      markup: `<tspan class="game-trophy-crown">♔</tspan><tspan dx="4">${this.escapeXml(name)}</tspan><tspan class="game-trophy-perfect" dx="4">${perfectLabel}</tspan>`,
+    };
+  }
+
+  static renderTrophyLine(perfectGames, x, y, rightX = x + 576, scrollSeconds = 18) {
     if (!perfectGames.length) {
       return '';
     }
 
-    let inner = '<tspan class="game-trophy-label">TROPHY CASE</tspan><tspan class="muted" dx="10">·</tspan>';
-    perfectGames.forEach((game, index) => {
-      if (index > 0) {
-        inner += '<tspan class="muted" dx="8">·</tspan>';
-      }
-      const total = game.achievementsTotal ?? 0;
-      const unlocked = game.achievementsUnlocked ?? total;
-      const name = this.truncate(game.name, total > 0 ? 18 : 22);
-      const perfectLabel = total > 0 ? `${unlocked}/${total} Perfect` : 'Perfect';
-      inner += `<tspan class="game-trophy-crown" dx="8">♔</tspan><tspan dx="4">${this.escapeXml(name)}</tspan><tspan class="game-trophy-perfect" dx="4">${perfectLabel}</tspan>`;
-    });
+    const labelWidth = 118;
+    const contentX = x + labelWidth;
+    const clipW = Math.max(40, rightX - contentX);
+    const clipId = 'trophy-case-clip';
+    const sepW = 22;
+    const entries = perfectGames.map((game) => this.trophyEntryMeta(game));
 
-    return `<text x="${x}" y="${y}" class="gaming-trophy">${inner}</text>`;
+    let segment = [...entries];
+    let segmentWidth = segment.reduce((sum, entry, i) => sum + entry.width + (i > 0 ? sepW : 0), 0) + sepW;
+    while (segmentWidth < clipW + 40) {
+      segment = segment.concat(entries);
+      segmentWidth = segment.reduce((sum, entry, i) => sum + entry.width + (i > 0 ? sepW : 0), 0) + sepW;
+    }
+
+    const renderSegment = (startX) => {
+      let cursor = startX;
+      const parts = [];
+      segment.forEach((entry) => {
+        parts.push(`<text x="${cursor.toFixed(1)}" y="${y}" class="gaming-trophy">${entry.markup}</text>`);
+        cursor += entry.width;
+        parts.push(
+          `<text x="${cursor.toFixed(1)}" y="${y}" class="gaming-trophy muted">·</text>`,
+        );
+        cursor += sepW;
+      });
+      return parts.join('');
+    };
+
+    // scrollSeconds ≈ time to move ~400px; scales with chain length for steady speed
+    const dur = Math.max(8, Number(scrollSeconds) * (segmentWidth / 400)).toFixed(1);
+
+    const label = `<text x="${x}" y="${y}" class="gaming-trophy"><tspan class="game-trophy-label">TROPHY CASE</tspan><tspan class="muted" dx="10">·</tspan></text>`;
+    const clip = `<defs><clipPath id="${clipId}"><rect x="${contentX}" y="${y - 12}" width="${clipW}" height="18" /></clipPath></defs>`;
+    const track = `
+      <g clip-path="url(#${clipId})">
+        <g>
+          <animateTransform attributeName="transform" type="translate" from="0 0" to="${(-segmentWidth).toFixed(1)} 0" dur="${dur}s" repeatCount="indefinite" />
+          ${renderSegment(contentX)}
+          ${renderSegment(contentX + segmentWidth)}
+        </g>
+      </g>`;
+
+    return `${label}${clip}${track}`;
   }
 
   static renderFooter(syncTime, commitHash, bootLine, achievement = null) {
