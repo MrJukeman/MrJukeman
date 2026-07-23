@@ -39,6 +39,9 @@ function writeSyncMetadata(extra = {}) {
     process.exit(1);
   }
 
+  const { default: ConfigLoader } = await import('./app/readme-updater/ConfigLoader.js');
+  await ConfigLoader.init();
+
   const collector = new Statistics(username, accessToken);
   const stats = await collector.getUserStatistics();
 
