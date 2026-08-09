@@ -1,55 +1,55 @@
-name: AryaOS Steam Presence
+# name: AryaOS Steam Presence
 
-on:
-  schedule:
-    # Every 30 minutes — lightweight Steam uplink only
-    - cron: '*/30 * * * *'
-  workflow_dispatch:
+# on:
+#   schedule:
+#     # Every 30 minutes — lightweight Steam uplink only
+#     - cron: '*/30 * * * *'
+#   workflow_dispatch:
 
-concurrency:
-  group: aryaos-dist
-  cancel-in-progress: false
+# concurrency:
+#   group: aryaos-dist
+#   cancel-in-progress: false
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  sync-steam-presence:
-    runs-on: ubuntu-latest
+# jobs:
+#   sync-steam-presence:
+#     runs-on: ubuntu-latest
 
-    env:
-      STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
-      STEAM_VANITY_URL: ${{ secrets.STEAM_VANITY_URL || 'MrJukeman' }}
+#     env:
+#       STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+#       STEAM_VANITY_URL: ${{ secrets.STEAM_VANITY_URL || 'MrJukeman' }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#         with:
+#           persist-credentials: false
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+#       - name: Install dependencies
+#         run: npm install
 
-      - name: Sync Steam presence
-        run: npm run presence
+#       - name: Sync Steam presence
+#         run: npm run presence
 
-      - name: Commit and push presence updates
-        run: |
-          git config --global user.email "${{ secrets.EMAIL }}"
-          git config --global user.name "${{ secrets.NAME }}"
+#       - name: Commit and push presence updates
+#         run: |
+#           git config --global user.email "${{ secrets.EMAIL }}"
+#           git config --global user.name "${{ secrets.NAME }}"
 
-          git add dist/
+#           git add dist/
 
-          if ! git diff --cached --quiet; then
-            git commit -m "AryaOS: steam presence sync [skip ci]"
-            git remote set-url origin https://x-access-token:${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}@github.com/${{ github.repository }}
-            git pull --rebase origin main
-            git push origin main
-          else
-            echo "Presence already up to date."
-          fi
+#           if ! git diff --cached --quiet; then
+#             git commit -m "AryaOS: steam presence sync [skip ci]"
+#             git remote set-url origin https://x-access-token:${{ secrets.ACCESS_TOKEN || secrets.GITHUB_ACCESS_TOKEN || github.token }}@github.com/${{ github.repository }}
+#             git pull --rebase origin main
+#             git push origin main
+#           else
+#             echo "Presence already up to date."
+#           fi
