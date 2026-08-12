@@ -134,7 +134,7 @@ class SvgUpdater {
   static updateSVG(stats, username, meta = {}) {
     const config = ConfigLoader.load();
     const syncTime = getNptTimestamp();
-    const age = getAge(config.profile.dob);
+    const age = getAge(config.profile.birthYear);
     const seed = Date.now() ^ Number.parseInt(stats.commitHash.replace(/\D/g, '') || '0', 10);
     const daySeed = seed ^ new Date().getDate() * 9973;
     const template = fs.readFileSync('resources/readme-template/main.svg', 'utf8');

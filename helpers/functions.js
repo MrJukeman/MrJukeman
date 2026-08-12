@@ -125,24 +125,13 @@ export function getNptTimestamp() {
   });
 }
 
-export function getAge(dob) {
-  const birthDate = new Date(dob);
-  const today = new Date();
+/** Age from birth year only — no month/day (full DOB is not exposed). */
+export function getAge(birthYear) {
+  const year = Number(birthYear);
+  if (!Number.isFinite(year) || year < 1900 || year > 2100) return '—';
 
-  let years = today.getFullYear() - birthDate.getFullYear();
-  let months = today.getMonth() - birthDate.getMonth();
-  let days = today.getDate() - birthDate.getDate();
+  const years = new Date().getFullYear() - year;
+  if (years < 0 || years > 120) return '—';
 
-  if (days < 0) {
-    months -= 1;
-    const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-    days += prevMonth.getDate();
-  }
-
-  if (months < 0) {
-    months += 12;
-    years -= 1;
-  }
-
-  return `${years} years, ${months} months, ${days} days`;
+  return `${years} years`;
 }

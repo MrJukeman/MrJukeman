@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '../..');
 const ARYAOS_PATH = path.join(ROOT, 'resources/config/aryaos.json');
-const DEFAULT_PORTFOLIO_URL = 'https://cdn.kyutefox.com/portfolio.json';
+const DEFAULT_PORTFOLIO_URL = 'https://rajuchoudhary.com.np/api/portfolio';
 
 let cachedConfig = null;
 let initPromise = null;
@@ -39,7 +39,9 @@ function fromPortfolio(portfolio) {
   const skills = portfolio.skills || [];
   const experience = portfolio.experience || [];
 
-  const activeExperience = experience.filter((job) => !job.end);
+  const activeExperience = experience.filter((job) =>
+    typeof job.current === 'boolean' ? job.current : !job.end
+  );
   const hosts = activeExperience.map((job) => job.company).join(' · ');
   const crewNodes = activeExperience.map((job) => ({
     label: job.company,
@@ -47,7 +49,7 @@ function fromPortfolio(portfolio) {
 
   return {
     profile: {
-      dob: identity.dob,
+      birthYear: identity.birthYear,
       os: identity.os,
       kernel: identity.role,
       tagline: identity.tagline,
