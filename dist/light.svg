@@ -223,74 +223,52 @@
     opacity: 0;
   }
 }
-</style><defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path fill="none" stroke="rgba(255,255,255,0.036)" stroke-width="1" d="M 24 0 L 0 0 0 24"/></pattern>
+</style><defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path fill="none" stroke="rgba(255,255,255,0.033)" stroke-width="1" d="M 24 0 L 0 0 0 24"/></pattern>
       <radialGradient id="wallpaper-drift" cx="50%" cy="45%" r="65%">
-        <stop offset="0%" stop-color="#d81e5b" stop-opacity="0.056" />
+        <stop offset="0%" stop-color="#d81e5b" stop-opacity="0.031" />
         <stop offset="100%" stop-color="#0969da" stop-opacity="0" />
       </radialGradient>
     <filter id="crew-glow" width="160%" height="160%" x="-30%" y="-30%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="1.1"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="1000" height="572" class="main-box" rx="16"/><rect width="1000" height="572" fill="url(#grid)" rx="16"/>
-      <circle cx="687" cy="177" r="341" fill="url(#wallpaper-drift)" opacity="0.020" />
+      <circle cx="785" cy="215" r="220" fill="url(#wallpaper-drift)" opacity="0.012" />
       <g class="butterflies-back" style="pointer-events:none">
-      <g class="butterfly" opacity="0.52">
-        
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 234 88 C 669 177, 386 108, 844 79 C 753 420, 690 296, 368 474 C 506 382, 368 350, 467 295 C 726 406, 719 426, 896 434 C 528 338, 642 150, 179 67 C 299 251, 287 347, 612 383 C 882 335, 857 365, 909 315 C 364 378, 372 212, 70 371 C 308 533, 333 540, 730 423 C 420 497, 616 548, 283 499 C 613 546, 529 454, 838 384 C 587 255, 683 247, 443 235 C 302 215, 255 157, 249 126 C 696 170, 577 135, 967 21 C 571 109, 682 105, 209 77 C 165 292, 87 301, 71 386 C 162 424, 87 331, 178 370 C 83 380, 89 373, 27 363 C 41 356, 65 322, 196 442 C 364 447, 277 437, 329 221 C 650 100, 513 383, 811 273 C 773 229, 754 185, 710 25 C 795 71, 816 87, 872 27 C 464 303, 673 157, 212 537 C 383 335, 375 513, 470 244 C 457 209, 471 201, 234 88" rotate="auto" />
-        <g transform="scale(0.76)">
-          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.07s" repeatCount="indefinite" />
+      <g class="butterfly butterfly-nearmiss" opacity="0.36">
+        <animateMotion dur="320s" repeatCount="indefinite" path="M 164 197 C 108 242, 154 198, 57 202 C 235 232, 296 385, 634 498 C 881 529, 891 533, 915 494 C 948 273, 976 249, 872 220 C 549 70, 629 216, 190 233 C 460 46, 401 145, 731 62 C 480 72, 580 233, 326 204 C 703 355, 473 480, 798 474 C 778 548, 675 435, 490 499 C 461 466, 441 479, 430 460 C 621 479, 682 179, 882 190 C 895 111, 819 138, 770 48 C 621 416, 479 148, 170 488 C 297 265, 437 460, 698 112 C 545 321, 623 454, 686 499 C 686 283, 616 218, 744 44 C 382 331, 569 113, 112 356 C 267 314, 267 85, 739 111 C 829 55, 765 46, 835 72 C 513 149, 357 267, 50 418 C 268 333, 561 177, 794 102 C 780 104, 772 100, 769 87 C 776 92, 779 77, 804 64 C 691 222, 753 125, 463 118 C 271 363, 303 188, 321 508 C 423 357, 475 170, 800 77 C 481 220, 566 19, 164 197" rotate="auto" />
+        <g transform="scale(0.86)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FFE66D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.75s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.07s" repeatCount="indefinite" />
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#4DC9FF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.75s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.07s" repeatCount="indefinite" />
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#4DC9FF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.75s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.07s" repeatCount="indefinite" />
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FFE66D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.75s" repeatCount="indefinite" />
           </ellipse>
           <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="0" cy="-5" r="1.6" fill="#A78BFA" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FFE66D" />
         </g>
       </g>
     
-      <g class="butterfly" opacity="0.46">
-        
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 321 361 C 276 135, 159 270, 172 135 C 208 205, 282 302, 267 327 C 210 161, 301 239, 74 88 C 626 100, 399 44, 899 107 C 543 88, 712 243, 221 297 C 314 105, 405 93, 586 141 C 724 181, 772 124, 772 249 C 521 46, 674 301, 295 110 C 311 214, 272 136, 356 475 C 428 514, 578 416, 641 435 C 723 322, 722 290, 763 265 C 439 282, 544 94, 379 95 C 544 123, 600 18, 684 34 C 585 220, 693 347, 494 519 C 283 548, 460 449, 261 462 C 447 229, 446 385, 603 42 C 822 248, 604 172, 839 545 C 485 548, 716 548, 389 488 C 692 237, 726 378, 847 36 C 421 238, 551 262, 32 383 C 251 533, 251 363, 716 385 C 902 283, 865 332, 872 202 C 736 196, 726 279, 720 354 C 548 416, 452 282, 337 461 C 296 379, 308 373, 321 361" rotate="auto" />
-        <g transform="scale(0.85)">
-          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.11s" repeatCount="indefinite" />
+      <g class="butterfly butterfly-seeker" opacity="0.63">
+        <title>seeker · one wing remembers the way home</title>
+        <animateMotion dur="320s" repeatCount="indefinite" path="M 587 81 C 479 18, 421 80, 155 153 C 540 244, 499 183, 700 207 C 577 313, 353 271, 232 469 C 301 171, 384 245, 345 111 C 339 79, 304 85, 302 74 C 306 72, 286 205, 181 258 C 323 183, 584 44, 730 26 C 466 136, 660 266, 415 338 C 470 185, 460 314, 768 151 C 649 178, 441 217, 311 319 C 373 202, 669 308, 755 114 C 517 96, 486 145, 440 230 C 723 268, 456 498, 762 490 C 739 227, 614 252, 606 233 C 621 364, 598 389, 795 505 C 712 420, 710 348, 394 122 C 569 18, 584 18, 757 90 C 974 260, 857 228, 969 222 C 848 171, 773 293, 644 183 C 560 156, 623 230, 508 174 C 600 301, 611 144, 975 300 C 554 365, 630 284, 273 136 C 397 115, 337 126, 401 95 C 179 56, 164 210, 99 111 C 253 46, 496 179, 587 81" rotate="auto" />
+        <g transform="scale(0.73)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF7EB6" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.70s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.11s" repeatCount="indefinite" />
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#F472B6" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.70s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.11s" repeatCount="indefinite" />
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#F472B6" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.70s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.11s" repeatCount="indefinite" />
-          </ellipse>
-          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="0" cy="-5" r="1.6" fill="#6BFF8E" />
-        </g>
-      </g>
-    
-      <g class="butterfly" opacity="0.63">
-        
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 564 115 C 644 214, 672 202, 698 207 C 890 55, 730 96, 960 67 C 589 153, 450 18, 87 129 C 236 269, 353 369, 550 289 C 593 320, 540 323, 735 489 C 667 327, 627 429, 325 150 C 350 253, 584 306, 612 246 C 624 300, 639 289, 786 209 C 700 309, 523 74, 467 111 C 326 336, 401 392, 264 501 C 570 329, 484 322, 975 212 C 636 167, 591 120, 464 196 C 463 314, 470 383, 629 413 C 641 466, 787 354, 823 428 C 644 137, 683 302, 441 65 C 271 111, 362 387, 294 451 C 367 331, 405 487, 584 277 C 558 221, 493 226, 459 205 C 231 163, 308 220, 201 339 C 536 381, 546 518, 814 417 C 481 239, 485 315, 139 318 C 454 510, 602 404, 966 422 C 767 180, 620 323, 556 237 C 457 518, 329 509, 283 507 C 185 458, 185 456, 185 453 C 239 469, 227 398, 285 385 C 445 383, 417 367, 581 322 C 522 366, 498 458, 524 485 C 550 442, 679 548, 724 518 C 742 250, 573 317, 564 115" rotate="auto" />
-        <g transform="scale(0.93)">
-          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.89s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#00D4AA" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.89s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#00D4AA" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.89s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.89s" repeatCount="indefinite" />
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF7EB6" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.70s" repeatCount="indefinite" />
           </ellipse>
           <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="0" cy="-5" r="1.6" fill="#C44DFF" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF7EB6" />
         </g>
       </g>
     </g> 
@@ -313,16 +291,16 @@
           </linearGradient>
         </defs>
         <rect x="538" y="50" width="310" height="18" rx="4" fill="url(#homecoming-sheen)" opacity="0">
-          <animate attributeName="opacity" values="0;0;0.65;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;0;0.65;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
         </rect>
         <line x1="538" y1="65" x2="538" y2="65" class="romance-strike-line" stroke="#FFD700" stroke-width="1.2" stroke-linecap="round" opacity="0">
-          <animate attributeName="x2" values="538;538;848;848;538" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;0;0.92;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
+          <animate attributeName="x2" values="538;538;848;848;538" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;0;0.92;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
         </line>
         <circle cx="538" cy="65" r="2.1" fill="#FFF4A3" opacity="0">
-          <animate attributeName="cx" values="538;538;848;848;538" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
-          <animate attributeName="r" values="1.2;1.2;2.4;1.2;1.2" keyTimes="0;0.9020;0.9200;0.9480;1" dur="51s" repeatCount="indefinite" />
+          <animate attributeName="cx" values="538;538;848;848;538" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
+          <animate attributeName="r" values="1.2;1.2;2.4;1.2;1.2" keyTimes="0;0.9020;0.9200;0.9480;1" dur="45s" repeatCount="indefinite" />
         </circle>
       </g>
     
@@ -349,7 +327,7 @@
           <tspan x="779" class="dim">·</tspan>
           <!-- steam-uplink:start --><tspan x="791" class="valueColor">Steam </tspan><tspan class="addColor">Online</tspan><!-- steam-uplink:end -->
           <tspan x="878" class="dim">·</tspan>
-          <tspan x="890" class="dim">cce1aff</tspan>
+          <tspan x="890" class="dim">5622f3f</tspan>
         </text>
 
         
@@ -373,9 +351,9 @@
     
       
       <text x="538" y="132" class="section-label">◈ RUNTIME</text>
-      <text y="156" class="row"><tspan x="538" class="keyColor">Clock.NPT</tspan><tspan x="662" class="valueColor">10/13/2026, 14:25:26</tspan></text>
+      <text y="156" class="row"><tspan x="538" class="keyColor">Clock.NPT</tspan><tspan x="662" class="valueColor">10/14/2026, 14:17:32</tspan></text>
       <text y="178" class="row"><tspan x="538" class="keyColor">Build.Channel</tspan><tspan x="662" class="valueColor">6.2026.3295</tspan></text>
-      <text y="200" class="row"><tspan x="538" class="keyColor">Sync.Status</tspan><tspan x="662" class="valueColor">online · hash cce1aff</tspan></text>
+      <text y="200" class="row"><tspan x="538" class="keyColor">Sync.Status</tspan><tspan x="662" class="valueColor">online · hash 5622f3f</tspan></text>
       <text y="222" class="row"><tspan x="538" class="keyColor">Toolkit</tspan><tspan x="662" class="valueColor">Git · Docker · Shell / Bash · Vite · …</tspan></text>
     
       
@@ -463,7 +441,7 @@
       <a href="https://steamcommunity.com/id/MrJukeman/games/?tab=perfect">
         <text x="372" y="420" class="section-label link">◈ GAMING.DOCK</text>
       </a>
-      <text x="948" y="420" text-anchor="end" class="gaming-stats">763h logged · 6 perfect</text>
+      <text x="948" y="420" text-anchor="end" class="gaming-stats">765h logged · 6 perfect</text>
       <line x1="372" y1="430" x2="948" y2="430" class="gaming-divider" />
       <text y="443" class="muted">
         <tspan x="372">#</tspan>
@@ -476,7 +454,7 @@
             <text y="459" class="gaming-row">
               <tspan x="372" class="game-rank">01</tspan>
               <tspan x="400" class="game-title">Assassin's Creed Valhalla</tspan>
-              <tspan x="700" class="game-hours">70h</tspan>
+              <tspan x="700" class="game-hours">72h</tspan>
             </text>
             <rect x="760" y="451" width="148" height="5" rx="2" class="game-bar-bg" />
             <rect x="760" y="451" width="36" height="5" rx="2" class="game-bar-fill"></rect>
@@ -512,184 +490,193 @@
           <text x="1979.0" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Lords of the Fallen</tspan><tspan class="game-trophy-perfect" dx="4">77/77 Perfect</tspan></text><text x="2183.8" y="520" class="gaming-trophy muted">·</text><text x="2205.8" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">God of War</tspan><tspan class="game-trophy-perfect" dx="4">37/37 Perfect</tspan></text><text x="2356.2" y="520" class="gaming-trophy muted">·</text><text x="2378.2" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Assassin's Creed Black Flag Resynced</tspan><tspan class="game-trophy-perfect" dx="4">49/49 Perfect</tspan></text><text x="2685.8" y="520" class="gaming-trophy muted">·</text><text x="2707.8" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Ghost of Tsushima DIRECTOR'S CUT</tspan><tspan class="game-trophy-perfect" dx="4">77/77 Perfect</tspan></text><text x="2991.3" y="520" class="gaming-trophy muted">·</text><text x="3013.3" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Assassin's Creed Shadows</tspan><tspan class="game-trophy-perfect" dx="4">75/75 Perfect</tspan></text><text x="3248.3" y="520" class="gaming-trophy muted">·</text><text x="3270.3" y="520" class="gaming-trophy"><tspan class="game-trophy-crown">♔</tspan><tspan dx="4">Counter-Strike 2</tspan><tspan class="game-trophy-perfect" dx="4">1/1 Perfect</tspan></text><text x="3446.1" y="520" class="gaming-trophy muted">·</text>
         </g>
       </g><!-- gaming-dock:end -->
-    <text x="28" y="558" class="footer">build cce1aff · synced 10/13/2026, 14:25:26 NPT · [0.102] AryaOS ready — operator @MrJukeman · <tspan class="cursor">█</tspan></text><g class="butterflies-front" style="pointer-events:none">
-      <g class="butterfly" opacity="0.58">
+    <text x="28" y="558" class="footer">build 5622f3f · synced 10/14/2026, 14:17:32 NPT · [0.061] golden trail … sparkle path active · <tspan class="cursor">█</tspan></text><g class="butterflies-front" style="pointer-events:none">
+      <g class="butterfly" opacity="0.52">
         
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 427 202 C 347 281, 454 257, 298 450 C 646 466, 453 450, 802 344 C 607 312, 783 158, 593 169 C 708 131, 679 156, 836 159 C 793 278, 746 255, 842 392 C 632 405, 524 306, 150 316 C 253 421, 300 327, 358 391 C 347 365, 216 419, 197 291 C 274 180, 447 265, 508 284 C 268 349, 328 413, 168 355 C 449 290, 299 213, 576 382 C 540 343, 581 281, 568 276 C 181 323, 473 206, 59 84 C 171 271, 71 135, 273 233 C 222 121, 277 135, 185 110 C 218 283, 160 413, 282 546 C 601 548, 472 393, 933 493 C 758 317, 526 371, 397 442 C 631 277, 585 266, 738 333 C 514 363, 426 239, 288 376 C 379 365, 391 312, 409 89 C 400 133, 441 197, 427 202" rotate="auto" />
-        <g transform="scale(0.87)">
+        <animateMotion dur="320s" repeatCount="indefinite" path="M 166 147 C 521 312, 612 472, 836 543 C 407 425, 555 218, 221 44 C 313 18, 442 124, 499 122 C 420 369, 453 346, 221 504 C 292 523, 457 471, 556 294 C 605 224, 674 331, 794 260 C 606 270, 633 522, 245 547 C 708 530, 632 485, 854 506 C 707 448, 737 334, 415 434 C 598 472, 512 537, 648 475 C 400 486, 411 408, 140 488 C 530 338, 320 277, 783 247 C 624 207, 595 192, 173 288 C 196 244, 326 277, 279 27 C 286 74, 257 172, 433 409 C 453 405, 303 397, 301 210 C 369 253, 547 316, 576 295 C 512 225, 490 260, 478 156 C 590 331, 737 207, 726 476 C 848 198, 866 165, 778 96 C 734 99, 760 112, 706 143 C 528 232, 583 18, 166 147" rotate="auto" />
+        <g transform="scale(0.66)">
+          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF6B9D" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.06s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.06s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.06s" repeatCount="indefinite" />
+          </ellipse>
+          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF6B9D" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.06s" repeatCount="indefinite" />
+          </ellipse>
+          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="0" cy="-5" r="1.6" fill="#FF6B9D" />
+        </g>
+      </g>
+    
+      <g class="butterfly" opacity="0.57">
+        
+        <animateMotion dur="320s" repeatCount="indefinite" path="M 804 51 C 754 122, 752 65, 590 87 C 550 268, 726 308, 642 339 C 636 167, 730 145, 855 167 C 805 201, 639 234, 622 386 C 454 329, 518 463, 395 391 C 781 254, 656 416, 961 421 C 428 367, 444 515, 132 477 C 257 250, 471 500, 608 239 C 720 119, 740 71, 964 134 C 394 288, 558 407, 118 439 C 236 221, 93 275, 265 72 C 168 154, 162 139, 200 437 C 354 548, 565 329, 720 479 C 637 206, 549 275, 426 97 C 630 182, 538 92, 711 345 C 347 437, 615 546, 199 541 C 276 455, 159 452, 316 349 C 240 429, 240 479, 250 498 C 597 129, 582 410, 804 51" rotate="auto" />
+        <g transform="scale(0.70)">
           <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.74s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.91s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#FF5757" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.74s" repeatCount="indefinite" />
+          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#A78BFA" opacity="0.9">
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.91s" repeatCount="indefinite" />
           </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#FF5757" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.74s" repeatCount="indefinite" />
+          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.91s" repeatCount="indefinite" />
           </ellipse>
           <ellipse cx="4" cy="5" rx="5" ry="6" fill="#A78BFA" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.74s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.91s" repeatCount="indefinite" />
           </ellipse>
           <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
           <circle cx="0" cy="-5" r="1.6" fill="#A78BFA" />
         </g>
       </g>
     
-      <g class="butterfly" opacity="0.67">
-        
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 412 97 C 428 209, 450 261, 629 447 C 798 387, 635 282, 731 173 C 772 253, 796 208, 794 264 C 709 285, 782 281, 703 366 C 687 194, 742 219, 837 162 C 712 230, 649 247, 338 334 C 456 120, 465 153, 735 34 C 411 85, 470 59, 63 189 C 98 236, 85 164, 309 142 C 582 309, 792 351, 963 357 C 714 156, 673 383, 196 252 C 180 484, 249 436, 287 518 C 320 472, 339 482, 413 503 C 293 466, 221 452, 188 377 C 181 396, 144 392, 68 426 C 255 359, 461 510, 589 395 C 685 361, 579 357, 696 142 C 872 373, 742 124, 955 355 C 781 332, 783 215, 412 97" rotate="auto" />
-        <g transform="scale(1.05)">
-          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#C44DFF" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.91s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#6BFF8E" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.91s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#6BFF8E" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.91s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#C44DFF" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.91s" repeatCount="indefinite" />
-          </ellipse>
-          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="0" cy="-5" r="1.6" fill="#C44DFF" />
-        </g>
-      </g>
-    
-      <g class="butterfly butterfly-seeker" opacity="0.36">
-        <title>seeker · one wing remembers the way home</title>
-        <animateMotion dur="320s" repeatCount="indefinite" path="M 255 406 C 236 370, 344 343, 316 250 C 323 359, 428 462, 581 475 C 504 519, 511 424, 376 376 C 502 83, 599 139, 631 71 C 684 80, 684 96, 665 153 C 791 180, 692 158, 837 143 C 763 168, 817 124, 697 95 C 812 319, 942 270, 867 415 C 401 285, 516 338, 251 106 C 403 18, 516 208, 726 186 C 821 98, 833 103, 853 112 C 757 153, 846 281, 573 243 C 546 443, 539 438, 434 475 C 134 240, 442 377, 135 247 C 461 223, 481 300, 742 145 C 784 95, 760 154, 849 102 C 769 166, 806 30, 489 92 C 596 178, 539 141, 797 90 C 807 304, 754 244, 759 346 C 820 310, 807 201, 832 190 C 814 189, 737 207, 723 185 C 793 284, 714 229, 798 335 C 745 325, 668 239, 633 224 C 338 189, 524 163, 208 197 C 354 156, 394 153, 560 382 C 387 253, 268 134, 118 148 C 124 159, 167 398, 255 406" rotate="auto" />
-        <g transform="scale(0.82)">
-          <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF7EB6" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="1.10s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#00D4AA" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="1.10s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#00D4AA" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="1.10s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF7EB6" opacity="0.65">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="1.10s" repeatCount="indefinite" />
-          </ellipse>
-          <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="0" cy="-5" r="1.6" fill="#FF7EB6" />
-        </g>
-      </g>
-    
       <g class="butterfly butterfly-arya">
         <title>she always finds her way back</title>
-        <animateMotion dur="51s" repeatCount="indefinite" path="M 190 605 C 270 485, 505 359, 740 68 C 770 38, 800 48, 780 48" rotate="auto" />
+        <animateMotion dur="45s" repeatCount="indefinite" path="M 212 547 C 292 427, 607 329, 740 68 C 770 38, 800 48, 780 48" rotate="auto" />
         <g transform="scale(1.42)">
           <circle cx="0" cy="0" r="13" class="butterfly-arya-glow" />
           <ellipse cx="-5" cy="-1" rx="7" ry="9" fill="#FF7EB6" opacity="0.95">
-            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.93s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="-16 -5 -1; 18 -5 -1; -16 -5 -1" dur="0.97s" repeatCount="indefinite" />
           </ellipse>
           <ellipse cx="5" cy="-1" rx="7" ry="9" fill="#F0A6C8" opacity="0.95">
-            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.93s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="16 5 -1; -18 5 -1; 16 5 -1" dur="0.97s" repeatCount="indefinite" />
           </ellipse>
           <ellipse cx="-4" cy="5" rx="5" ry="6" fill="#F0A6C8" opacity="0.72">
-            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.93s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="-10 -4 5; 14 -4 5; -10 -4 5" dur="0.97s" repeatCount="indefinite" />
           </ellipse>
           <ellipse cx="4" cy="5" rx="5" ry="6" fill="#FF7EB6" opacity="0.72">
-            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.93s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="rotate" values="10 4 5; -14 4 5; 10 4 5" dur="0.97s" repeatCount="indefinite" />
           </ellipse>
           <line x1="0" y1="-4" x2="0" y2="9" class="butterfly-body butterfly-arya-body" stroke-width="1.2" stroke-linecap="round" />
           <circle cx="0" cy="-5" r="1.6" fill="#FF7EB6" />
           <g class="arya-tail-sparkles">
-        <circle cx="-2.8" cy="10.1" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.85;0.24;0.56;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.40s" repeatCount="indefinite" begin="3.00s" />
-          <animate attributeName="r" values="0.4;1.7;0.3;0.2" keyTimes="0;0.3;0.62;1" dur="1.40s" repeatCount="indefinite" begin="3.00s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -1.2,9.7; -3.2,21.7" keyTimes="0;0.4;1" dur="1.40s" repeatCount="indefinite" begin="3.00s" />
+        <circle cx="1.2" cy="13.0" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.78;0.12;0.62;0" keyTimes="0;0.18;0.42;0.68;1" dur="3.28s" repeatCount="indefinite" begin="1.69s" />
+          <animate attributeName="r" values="0.7;1.4;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="3.28s" repeatCount="indefinite" begin="1.69s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 5.0,4.5; 13.6,9.0" keyTimes="0;0.4;1" dur="3.28s" repeatCount="indefinite" begin="1.69s" />
+        </circle>
+      
+        <circle cx="0.3" cy="9.9" r="0.6" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.98;0.19;0.69;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.32s" repeatCount="indefinite" begin="2.70s" />
+          <animate attributeName="r" values="0.6;1.9;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="1.32s" repeatCount="indefinite" begin="2.70s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 2.3,5.0; 5.2,12.0" keyTimes="0;0.4;1" dur="1.32s" repeatCount="indefinite" begin="2.70s" />
+        </circle>
+      
+        <circle cx="1.8" cy="11.7" r="0.5" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.84;0.21;0.75;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.92s" repeatCount="indefinite" begin="0.91s" />
+          <animate attributeName="r" values="0.5;1.8;0.4;0.2" keyTimes="0;0.3;0.62;1" dur="1.92s" repeatCount="indefinite" begin="0.91s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0.8,3.6; 2.8,10.0" keyTimes="0;0.4;1" dur="1.92s" repeatCount="indefinite" begin="0.91s" />
         </circle>
       
       <g opacity="0" class="arya-tail-sparkle arya-tail-star">
-        <animate attributeName="opacity" values="0;0.89;0.28;0" keyTimes="0;0.25;0.55;1" dur="1.66s" repeatCount="indefinite" begin="0.55s" />
-        <animateTransform attributeName="transform" type="translate" values="-0.9,13.4; -1.8,20.9; -3.2,34.5" keyTimes="0;0.4;1" dur="1.66s" repeatCount="indefinite" begin="0.55s" />
+        <animate attributeName="opacity" values="0;0.88;0.24;0" keyTimes="0;0.25;0.55;1" dur="1.81s" repeatCount="indefinite" begin="1.72s" />
+        <animateTransform attributeName="transform" type="translate" values="0.1,9.6; -1.3,16.7; -2.7,25.3" keyTimes="0;0.4;1" dur="1.81s" repeatCount="indefinite" begin="1.72s" />
         <g>
-          <line x1="-1.3" y1="0" x2="1.3" y2="0" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
-          <line x1="0" y1="-1.3" x2="0" y2="1.3" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
-          <line x1="-0.8" y1="-0.8" x2="0.8" y2="0.8" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
-          <line x1="-0.8" y1="0.8" x2="0.8" y2="-0.8" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
-          <animateTransform attributeName="transform" type="rotate" values="0;119;287" keyTimes="0;0.5;1" dur="1.66s" repeatCount="indefinite" begin="0.55s" />
+          <line x1="-1.2" y1="0" x2="1.2" y2="0" stroke="#FFF4A3" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="0" y1="-1.2" x2="0" y2="1.2" stroke="#FFF4A3" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="-0.8" y1="-0.8" x2="0.8" y2="0.8" stroke="#FFF4A3" stroke-width="0.5" stroke-linecap="round" />
+          <line x1="-0.8" y1="0.8" x2="0.8" y2="-0.8" stroke="#FFF4A3" stroke-width="0.5" stroke-linecap="round" />
+          <animateTransform attributeName="transform" type="rotate" values="0;60;221" keyTimes="0;0.5;1" dur="1.81s" repeatCount="indefinite" begin="1.72s" />
         </g>
       </g>
     
-        <circle cx="1.5" cy="11.4" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.72;0.18;0.78;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.08s" repeatCount="indefinite" begin="1.40s" />
-          <animate attributeName="r" values="0.7;1.9;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="2.08s" repeatCount="indefinite" begin="1.40s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 3.2,10.4; 6.6,22.4" keyTimes="0;0.4;1" dur="2.08s" repeatCount="indefinite" begin="1.40s" />
+        <circle cx="0.8" cy="10.8" r="0.6" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.97;0.13;0.55;0" keyTimes="0;0.18;0.42;0.68;1" dur="3.03s" repeatCount="indefinite" begin="1.17s" />
+          <animate attributeName="r" values="0.6;1.3;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="3.03s" repeatCount="indefinite" begin="1.17s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -4.0,9.1; -8.4,18.2" keyTimes="0;0.4;1" dur="3.03s" repeatCount="indefinite" begin="1.17s" />
         </circle>
       
-        <circle cx="1.8" cy="11.9" r="0.6" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.87;0.29;0.54;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.77s" repeatCount="indefinite" begin="0.16s" />
-          <animate attributeName="r" values="0.6;1.9;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="2.77s" repeatCount="indefinite" begin="0.16s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 3.7,3.7; 10.8,8.4" keyTimes="0;0.4;1" dur="2.77s" repeatCount="indefinite" begin="0.16s" />
+        <circle cx="-2.9" cy="12.9" r="0.7" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.95;0.31;0.63;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.71s" repeatCount="indefinite" begin="1.55s" />
+          <animate attributeName="r" values="0.7;1.3;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="2.71s" repeatCount="indefinite" begin="1.55s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -1.4,10.2; -4.5,18.8" keyTimes="0;0.4;1" dur="2.71s" repeatCount="indefinite" begin="1.55s" />
         </circle>
       
       <g opacity="0" class="arya-tail-sparkle arya-tail-star">
-        <animate attributeName="opacity" values="0;0.72;0.34;0" keyTimes="0;0.25;0.55;1" dur="3.12s" repeatCount="indefinite" begin="1.02s" />
-        <animateTransform attributeName="transform" type="translate" values="-1.7,11.7; 0.2,20.6; 4.9,36.7" keyTimes="0;0.4;1" dur="3.12s" repeatCount="indefinite" begin="1.02s" />
+        <animate attributeName="opacity" values="0;0.84;0.25;0" keyTimes="0;0.25;0.55;1" dur="1.58s" repeatCount="indefinite" begin="0.15s" />
+        <animateTransform attributeName="transform" type="translate" values="1.4,10.3; 2.7,16.1; 4.3,24.8" keyTimes="0;0.4;1" dur="1.58s" repeatCount="indefinite" begin="0.15s" />
         <g>
-          <line x1="-1.3" y1="0" x2="1.3" y2="0" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
-          <line x1="0" y1="-1.3" x2="0" y2="1.3" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
-          <line x1="-0.8" y1="-0.8" x2="0.8" y2="0.8" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
-          <line x1="-0.8" y1="0.8" x2="0.8" y2="-0.8" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
-          <animateTransform attributeName="transform" type="rotate" values="0;56;210" keyTimes="0;0.5;1" dur="3.12s" repeatCount="indefinite" begin="1.02s" />
+          <line x1="-1.1" y1="0" x2="1.1" y2="0" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="0" y1="-1.1" x2="0" y2="1.1" stroke="#FFD700" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="-0.7" y1="-0.7" x2="0.7" y2="0.7" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
+          <line x1="-0.7" y1="0.7" x2="0.7" y2="-0.7" stroke="#FFD700" stroke-width="0.5" stroke-linecap="round" />
+          <animateTransform attributeName="transform" type="rotate" values="0;69;228" keyTimes="0;0.5;1" dur="1.58s" repeatCount="indefinite" begin="0.15s" />
         </g>
       </g>
     
-        <circle cx="1.2" cy="13.0" r="0.6" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.90;0.33;0.75;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.67s" repeatCount="indefinite" begin="1.74s" />
-          <animate attributeName="r" values="0.6;1.3;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="1.67s" repeatCount="indefinite" begin="1.74s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -6.0,11.7; -13.7,24.6" keyTimes="0;0.4;1" dur="1.67s" repeatCount="indefinite" begin="1.74s" />
+        <circle cx="1.6" cy="9.8" r="0.7" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.87;0.33;0.75;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.53s" repeatCount="indefinite" begin="2.56s" />
+          <animate attributeName="r" values="0.7;1.4;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="2.53s" repeatCount="indefinite" begin="2.56s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -2.6,8.0; -5.9,22.6" keyTimes="0;0.4;1" dur="2.53s" repeatCount="indefinite" begin="2.56s" />
         </circle>
       
-        <circle cx="2.2" cy="10.6" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.93;0.27;0.76;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.75s" repeatCount="indefinite" begin="0.04s" />
-          <animate attributeName="r" values="0.7;1.9;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="2.75s" repeatCount="indefinite" begin="0.04s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -2.9,6.5; -6.2,14.5" keyTimes="0;0.4;1" dur="2.75s" repeatCount="indefinite" begin="0.04s" />
+        <circle cx="1.3" cy="11.1" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.84;0.18;0.82;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.48s" repeatCount="indefinite" begin="2.24s" />
+          <animate attributeName="r" values="0.7;1.3;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="2.48s" repeatCount="indefinite" begin="2.24s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 1.5,4.6; 5.8,12.4" keyTimes="0;0.4;1" dur="2.48s" repeatCount="indefinite" begin="2.24s" />
         </circle>
       
-        <circle cx="-0.1" cy="12.5" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.96;0.14;0.69;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.90s" repeatCount="indefinite" begin="0.93s" />
-          <animate attributeName="r" values="0.4;1.7;0.4;0.2" keyTimes="0;0.3;0.62;1" dur="2.90s" repeatCount="indefinite" begin="0.93s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -3.7,8.9; -11.0,21.2" keyTimes="0;0.4;1" dur="2.90s" repeatCount="indefinite" begin="0.93s" />
+        <circle cx="0.9" cy="10.8" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.88;0.12;0.56;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.10s" repeatCount="indefinite" begin="2.70s" />
+          <animate attributeName="r" values="0.4;1.7;0.3;0.2" keyTimes="0;0.3;0.62;1" dur="2.10s" repeatCount="indefinite" begin="2.70s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -4.0,5.3; -8.0,11.9" keyTimes="0;0.4;1" dur="2.10s" repeatCount="indefinite" begin="2.70s" />
         </circle>
       
-        <circle cx="1.2" cy="10.9" r="0.6" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.89;0.31;0.73;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.51s" repeatCount="indefinite" begin="0.75s" />
-          <animate attributeName="r" values="0.6;1.2;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="1.51s" repeatCount="indefinite" begin="0.75s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -2.8,6.2; -7.4,16.3" keyTimes="0;0.4;1" dur="1.51s" repeatCount="indefinite" begin="0.75s" />
+        <circle cx="-2.1" cy="9.8" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.95;0.19;0.53;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.04s" repeatCount="indefinite" begin="1.17s" />
+          <animate attributeName="r" values="0.4;1.9;0.3;0.2" keyTimes="0;0.3;0.62;1" dur="2.04s" repeatCount="indefinite" begin="1.17s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0.3,8.9; 0.8,17.7" keyTimes="0;0.4;1" dur="2.04s" repeatCount="indefinite" begin="1.17s" />
         </circle>
       
-        <circle cx="-1.9" cy="10.7" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.83;0.28;0.63;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.61s" repeatCount="indefinite" begin="0.34s" />
-          <animate attributeName="r" values="0.7;1.3;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="2.61s" repeatCount="indefinite" begin="0.34s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 5.1,5.5; 10.1,13.8" keyTimes="0;0.4;1" dur="2.61s" repeatCount="indefinite" begin="0.34s" />
+      <g opacity="0" class="arya-tail-sparkle arya-tail-star">
+        <animate attributeName="opacity" values="0;0.77;0.24;0" keyTimes="0;0.25;0.55;1" dur="3.37s" repeatCount="indefinite" begin="1.84s" />
+        <animateTransform attributeName="transform" type="translate" values="-2.6,12.9; 0.9,18.7; 5.0,24.6" keyTimes="0;0.4;1" dur="3.37s" repeatCount="indefinite" begin="1.84s" />
+        <g>
+          <line x1="-1.1" y1="0" x2="1.1" y2="0" stroke="#FFF4A3" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="0" y1="-1.1" x2="0" y2="1.1" stroke="#FFF4A3" stroke-width="0.7" stroke-linecap="round" />
+          <line x1="-0.7" y1="-0.7" x2="0.7" y2="0.7" stroke="#FFF4A3" stroke-width="0.5" stroke-linecap="round" />
+          <line x1="-0.7" y1="0.7" x2="0.7" y2="-0.7" stroke="#FFF4A3" stroke-width="0.5" stroke-linecap="round" />
+          <animateTransform attributeName="transform" type="rotate" values="0;64;268" keyTimes="0;0.5;1" dur="3.37s" repeatCount="indefinite" begin="1.84s" />
+        </g>
+      </g>
+    
+        <circle cx="-2.5" cy="9.8" r="0.5" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.76;0.22;0.50;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.78s" repeatCount="indefinite" begin="2.25s" />
+          <animate attributeName="r" values="0.5;2.0;0.4;0.2" keyTimes="0;0.3;0.62;1" dur="1.78s" repeatCount="indefinite" begin="2.25s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 5.4,3.5; 11.6,8.2" keyTimes="0;0.4;1" dur="1.78s" repeatCount="indefinite" begin="2.25s" />
         </circle>
       
-        <circle cx="1.4" cy="13.2" r="0.6" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.96;0.28;0.72;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.77s" repeatCount="indefinite" begin="0.75s" />
-          <animate attributeName="r" values="0.6;1.6;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="1.77s" repeatCount="indefinite" begin="0.75s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 1.2,4.5; 2.5,10.9" keyTimes="0;0.4;1" dur="1.77s" repeatCount="indefinite" begin="0.75s" />
+        <circle cx="0.0" cy="10.7" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.91;0.18;0.70;0" keyTimes="0;0.18;0.42;0.68;1" dur="3.38s" repeatCount="indefinite" begin="2.15s" />
+          <animate attributeName="r" values="0.7;1.8;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="3.38s" repeatCount="indefinite" begin="2.15s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -6.0,5.2; -12.8,11.3" keyTimes="0;0.4;1" dur="3.38s" repeatCount="indefinite" begin="2.15s" />
         </circle>
       
-        <circle cx="-1.0" cy="13.0" r="0.4" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;1.00;0.23;0.63;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.67s" repeatCount="indefinite" begin="2.97s" />
-          <animate attributeName="r" values="0.4;1.5;0.3;0.2" keyTimes="0;0.3;0.62;1" dur="2.67s" repeatCount="indefinite" begin="2.97s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 0.8,6.9; 1.5,18.5" keyTimes="0;0.4;1" dur="2.67s" repeatCount="indefinite" begin="2.97s" />
+        <circle cx="0.6" cy="13.3" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.82;0.37;0.68;0" keyTimes="0;0.18;0.42;0.68;1" dur="3.19s" repeatCount="indefinite" begin="2.09s" />
+          <animate attributeName="r" values="0.7;1.3;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="3.19s" repeatCount="indefinite" begin="2.09s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -6.4,4.2; -13.1,10.0" keyTimes="0;0.4;1" dur="3.19s" repeatCount="indefinite" begin="2.09s" />
         </circle>
       
-        <circle cx="1.0" cy="12.9" r="0.7" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.80;0.23;0.79;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.59s" repeatCount="indefinite" begin="0.30s" />
-          <animate attributeName="r" values="0.7;1.2;0.6;0.2" keyTimes="0;0.3;0.62;1" dur="2.59s" repeatCount="indefinite" begin="0.30s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; 2.2,10.7; 4.5,24.4" keyTimes="0;0.4;1" dur="2.59s" repeatCount="indefinite" begin="0.30s" />
+        <circle cx="0.5" cy="11.6" r="0.5" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.97;0.12;0.64;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.32s" repeatCount="indefinite" begin="2.35s" />
+          <animate attributeName="r" values="0.5;1.5;0.4;0.2" keyTimes="0;0.3;0.62;1" dur="2.32s" repeatCount="indefinite" begin="2.35s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; -4.2,7.9; -9.8,20.6" keyTimes="0;0.4;1" dur="2.32s" repeatCount="indefinite" begin="2.35s" />
         </circle>
       
-        <circle cx="-2.3" cy="10.3" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
-          <animate attributeName="opacity" values="0;0.75;0.26;0.66;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.73s" repeatCount="indefinite" begin="1.21s" />
-          <animate attributeName="r" values="0.4;1.6;0.4;0.2" keyTimes="0;0.3;0.62;1" dur="1.73s" repeatCount="indefinite" begin="1.21s" />
-          <animateTransform attributeName="transform" type="translate" values="0,0; -5.5,4.3; -10.7,9.0" keyTimes="0;0.4;1" dur="1.73s" repeatCount="indefinite" begin="1.21s" />
+        <circle cx="3.0" cy="9.9" r="0.6" fill="#FFF4A3" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.99;0.20;0.82;0" keyTimes="0;0.18;0.42;0.68;1" dur="2.16s" repeatCount="indefinite" begin="2.06s" />
+          <animate attributeName="r" values="0.6;1.6;0.5;0.2" keyTimes="0;0.3;0.62;1" dur="2.16s" repeatCount="indefinite" begin="2.06s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 2.4,7.3; 5.6,20.6" keyTimes="0;0.4;1" dur="2.16s" repeatCount="indefinite" begin="2.06s" />
+        </circle>
+      
+        <circle cx="-0.7" cy="9.8" r="0.4" fill="#FFD700" opacity="0" class="arya-tail-sparkle">
+          <animate attributeName="opacity" values="0;0.90;0.40;0.55;0" keyTimes="0;0.18;0.42;0.68;1" dur="1.37s" repeatCount="indefinite" begin="0.03s" />
+          <animate attributeName="r" values="0.4;1.3;0.3;0.2" keyTimes="0;0.3;0.62;1" dur="1.37s" repeatCount="indefinite" begin="0.03s" />
+          <animateTransform attributeName="transform" type="translate" values="0,0; 3.3,8.3; 6.2,21.6" keyTimes="0;0.4;1" dur="1.37s" repeatCount="indefinite" begin="0.03s" />
         </circle>
       </g>
         </g>
